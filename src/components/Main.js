@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
-import logo from '../assets/images/logo.png';
 
 import ConnectWallet from "../components/ConnectWallet";
 import ViewMarket from "../components/ViewMarket";

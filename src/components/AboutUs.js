@@ -1,7 +1,7 @@
 import React from "react";
 import { Accordion, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import logo from "../assets/images/logo.png";
+import logo from "../assets/images/foxswap.svg";
 
 function AboutUs() {
   return (

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import logo from "../../assets/images/logo.png";
+import logo from "../../assets/images/foxswap.svg";
 import { Button, Modal, Spinner } from "react-bootstrap";
 // import { useForm } from "react-hook-form";
 import { ethers } from "ethers";

@@ -11,11 +11,8 @@ export default class LockedToken {
     }   
     getDecimalsTotalBalance = async (userAddress) => {
         const callInstance = await initMultiCall();
-        console.log('getDecimalsTotalBalance-callInstance', callInstance)
         const value = await callInstance.all([this.contract.totalBalanceOf(userAddress)])
-        console.log('getDecimalsTotalBalance-value', value)
         const ans = ethers.utils.formatUnits(value[0], this.token.decimals);
-        console.log('getDecimalsTotalBalance-ans', ans);
         return ans;
     } 
     transferAll = async (offerAddress)=> {
