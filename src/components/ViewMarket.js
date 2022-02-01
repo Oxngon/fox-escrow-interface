@@ -2,7 +2,7 @@ import { useWeb3React } from "@web3-react/core";
 import { Contract } from "ethers-multicall";
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Table } from "react-bootstrap";
-import logo from "../assets/images/logo.png";
+import logo from "../assets/images/foxswap.svg";
 import CreatOfferModal from "../components/modal/CreatOfferModal";
 import ERC20Token from "../contracts/ERC20Token";
 import LockedTokenLens from "../contracts/LockedTokenLens";
