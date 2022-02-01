@@ -29,8 +29,6 @@ function CreatOfferModal(props) {
     const [fundLoading, setFundLoading] = useState(false);
     const offerAddress = useRef('0x');
 
-    console.log('stableCoins', stableCoins);
-    console.log('lockedTokens', lockedTokens);
 
     const resetState = () => {
         setTokenAdddressERR(false);
@@ -97,10 +95,11 @@ function CreatOfferModal(props) {
     useEffect(async () => {
         if (!ethers.utils.isAddress(currentLockedToken.address))
             return;
-        const jewelToken = new LockedToken(currentLockedToken);
-        const balance = await jewelToken.getDecimalsTotalBalance(account);
+
+        const lockedToken = new LockedToken(currentLockedToken, library.getSigner());
+        const balance = await lockedToken.getDecimalsTotalBalance(account);
         setBalance(balance)
-    }, [currentLockedToken]);
+    }, [currentLockedToken, account, library]);
     return (
         <Modal
             {...props}
@@ -142,7 +141,7 @@ function CreatOfferModal(props) {
                         </div>
 
                         <div className="offer-coin-div">
-                            <div className="mb-1 ms-1">Set $JEWEL price: </div>
+                            <div className="mb-1 ms-1">Set ${currentLockedToken.symbol} price: </div>
                             <div className="set-coin">
                                 <input disabled={offerCreated} className="coin-balance" type="number" min={1e-18} step={1e-18} value={price} placeholder="Amount" onChange={(e) => {
                                     setprice(e.target.value);
@@ -165,7 +164,7 @@ function CreatOfferModal(props) {
                         <div className="mt-4 flex content-center justify-center pb-4 border-b">
                             <Button disabled={loadingOffer || offerCreated || balance == 0} className="btn btn-primary mt-1 w-64 btn-error btn-disabled p-3 border-radius" onClick={handleSubmit}>
                                 {balance == 0 ?
-                                    `You have no $JEWEL` :
+                                    `You have no ${currentLockedToken.symbol}` :
                                     `Create Offer`
                                 }
                             </Button>
@@ -178,11 +177,11 @@ function CreatOfferModal(props) {
                         </div>
                         <div className="flex justify-content text-center mt-2 border-b pb-3 content-center grid justify-self-center overflow-hidden text-center">
                             <div className="dropdown dropdown-right dropdown-end text-2xl pb-2">
-                                Step 2. Fund Contract with $JEWEL
+                                Step 2. Fund Contract with ${currentLockedToken.symbol}
                             </div>
                         </div>
                         <div className="pt-4">
-                            <p>You can cancel the contract and retrieve all your unsold locked $JEWEL at any time.</p>
+                            <p>You can cancel the contract and retrieve all your unsold locked ${currentLockedToken.symbol} at any time.</p>
                         </div>
                         <div className="mt-4 flex content-center justify-center pb-4 border-b">
                             <Button disabled={fundLoading || !offerCreated} onClick={fundSubmit} className="btn btn-primary mt-1 w-64 btn-error btn-disabled p-3 border-radius">

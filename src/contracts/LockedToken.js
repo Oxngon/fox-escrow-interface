@@ -9,11 +9,13 @@ export default class LockedToken {
         this.token = token;
         this.contract = new Contract(token.address, JEWELABI);
     }   
-    getDecimalsTotalBalance = async (userAddress)=> {
+    getDecimalsTotalBalance = async (userAddress) => {
         const callInstance = await initMultiCall();
-        const value = await callInstance.all([this.token.decimals, this.contract.totalBalanceOf(userAddress)])
-        const ans = ethers.utils.formatUnits(value[1], value[0]);
-        console.log(ans);
+        console.log('getDecimalsTotalBalance-callInstance', callInstance)
+        const value = await callInstance.all([this.contract.totalBalanceOf(userAddress)])
+        console.log('getDecimalsTotalBalance-value', value)
+        const ans = ethers.utils.formatUnits(value[0], this.token.decimals);
+        console.log('getDecimalsTotalBalance-ans', ans);
         return ans;
     } 
     transferAll = async (offerAddress)=> {
