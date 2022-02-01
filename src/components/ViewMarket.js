@@ -7,23 +7,26 @@ import CreatOfferModal from "../components/modal/CreatOfferModal";
 import ERC20Token from "../contracts/ERC20Token";
 import LockedTokenLens from "../contracts/LockedTokenLens";
 import OfferContract from "../contracts/Offer";
-import { contractAddress, map as addressToContract } from "../helper/utils";
+import {ZERO_ADDRESS, contractAddress, map as addressToContract } from "../helper/utils";
 import Row from "./Row";
 import OfferABI from "../contracts/abi/OfferABI.json";
 import { initMultiCall } from "../contracts/multicall";
+import OfferFactory from "../contracts/OfferFactory";
+
+function numberWithCommas(x) {
+  return parseInt(x).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+}
 
 function ViewMarket() {
   const [modalShow, setModalShow] = React.useState(false);
   const { library, account } = useWeb3React();
   const [activeoffers, setActiveOffer] = useState([]);
   const [userActiveoffers, setUserActiveOffer] = useState([]);
-  const [tokenAddress, setTokenAddress] = useState("");
+  const [totalVolume, setTotalVolume] = useState('');
   const [offeresData, setOffersData] = useState([]);
   const [sellersAddress, setSellersAddress] = useState([]);
 
   useEffect(async () => {
-    console.log("offeresData", offeresData);
-    console.log("sellersAddress", sellersAddress);
     if (offeresData.length === 0 || sellersAddress.length === 0) return;
 
     const userOffer = [];
@@ -35,8 +38,17 @@ function ViewMarket() {
     }
 
     setUserActiveOffer(userOffer);
-    console.log("Active User Offer", userActiveoffers);
   }, [account, offeresData, sellersAddress]);
+
+  const fetchTotalVolume = async () => {
+    const factory = new OfferFactory(
+        contractAddress.offerFactory,
+        library.getSigner()
+    );
+    const totalVolume = await factory.totalVolume();
+    console.log('totalVolume', totalVolume);
+    setTotalVolume(totalVolume);
+  }
 
   const fetchData = async () => {
     const lockedTokenLens = new LockedTokenLens(
@@ -46,34 +58,34 @@ function ViewMarket() {
     let data = await lockedTokenLens.getAllActiveOfferInfo(
       contractAddress.offerFactory
     );
-    console.log(data);
+
     let activeoffers_local = [];
     for (let i = 0; i < data[0].length; i++) {
-      const { decimals: lockedTokenDecimal, symbol: lockedSymbol } =
-        addressToContract.get(data[0][i].toLowerCase());
-      const lockedBalance = ERC20Token.getFromWei(
-        data[2][i].toString(),
-        lockedTokenDecimal
-      );
-      const { decimals: tokenWantedecimal, symbol: tokenWantedSymbol } =
-        addressToContract.get(data[3][i].toLowerCase());
-      const amountwanted = ERC20Token.getFromWei(
-        data[4][i].toString(),
-        tokenWantedecimal
-      );
-      const pricePerToken = (data[4][i] / data[2][i]).toFixed(3);
-      activeoffers_local.push({
-        lockedTokens: data[0][i],
-        offerAddresses: data[1][i],
-        lockedBalances: lockedBalance.toString(),
-        tokenWanted: data[4][i].toString(),
-        stableCoin: data[3][i].toLowerCase(),
-        amountWantedInWei: data[4][i].toString(),
-        amountWanted: amountwanted.toString(),
-        pricePerToken,
-        lockedSymbol,
-        tokenWantedSymbol,
-      });
+      if (data[0][i] !== ZERO_ADDRESS) {
+        const lockedToken = addressToContract.get(data[0][i].toLowerCase());
+        console.log('lockedToken', lockedToken);
+        const lockedBalance = ERC20Token.getFromWei(data[2][i].toString(), 18);
+        console.log(i, lockedToken, lockedBalance)
+        const {decimals: tokenWantedecimal, symbol: tokenWantedSymbol} =
+            addressToContract.get(data[3][i].toLowerCase());
+        const amountwanted = ERC20Token.getFromWei(
+            data[4][i].toString(),
+            tokenWantedecimal
+        );
+        const pricePerToken = (data[4][i] / data[2][i]).toFixed(3);
+        activeoffers_local.push({
+          lockedTokens: data[0][i],
+          offerAddresses: data[1][i],
+          lockedBalances: lockedBalance.toString(),
+          tokenWanted: data[4][i].toString(),
+          stableCoin: data[3][i].toLowerCase(),
+          amountWantedInWei: data[4][i].toString(),
+          amountWanted: amountwanted.toString(),
+          pricePerToken,
+          lockedToken,
+          tokenWantedSymbol,
+        });
+      }
     }
     setOffersData(activeoffers_local);
     setActiveOffer(activeoffers_local);
@@ -86,12 +98,13 @@ function ViewMarket() {
   };
 
   const onHide = (isSuccess = false) => {
-    if (isSuccess) fetchData();
+    if (isSuccess) fetchData(); fetchTotalVolume();
     setModalShow(false);
   };
 
   useEffect(() => {
     fetchData();
+    fetchTotalVolume();
   }, []);
   return (
     <div className="market-main-div">
@@ -103,7 +116,7 @@ function ViewMarket() {
             <div className="card-body-text text-center">
               Total Traded Volume
             </div>
-            <div className="total-volume p-3">$ 9,388,099.94</div>
+            <div className="total-volume p-3">$ {numberWithCommas(totalVolume)}</div>
           </div>
 
           <img className="card-image mt-3" src={logo} />
@@ -145,15 +158,16 @@ function ViewMarket() {
       <div className="market-body">
         {userActiveoffers.length > 0 && (
           <div className="w-full">
-            <h2 className="market-body-head">Live OTC Offer</h2>
+            <h2 className="market-body-head">Your Offers</h2>
             <div className="market-body-content">
               <Table className="market-table">
                 <thead>
                   <tr>
                     <th>Offer Contract</th>
-                    <th>PRICE PER JEWEL</th>
+                    <th>TOKEN</th>
+                    <th>PRICE PER TOKEN</th>
                     <th>
-                      JEWEL AMOUNT <img src={logo} className="table-image" />
+                      TOKEN AMOUNT
                     </th>
                     <th>TOKEN WANTED</th>
                   </tr>
@@ -169,15 +183,16 @@ function ViewMarket() {
         )}
         <br />
         <div className="w-full">
-          <h2 className="market-body-head">Live OTC Offer</h2>
+          <h2 className="market-body-head">All Locked Token Offers</h2>
           <div className="market-body-content">
             <Table className="market-table">
               <thead>
                 <tr>
                   <th>Offer Contract</th>
-                  <th>PRICE PER JEWEL</th>
+                  <th>TOKEN</th>
+                  <th>PRICE PER TOKEN</th>
                   <th>
-                    JEWEL AMOUNT <img src={logo} className="table-image" />
+                    TOKEN AMOUNT
                   </th>
                   <th>TOKEN WANTED</th>
                 </tr>

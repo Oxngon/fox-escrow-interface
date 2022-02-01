@@ -23,7 +23,7 @@ function AboutUs() {
               <img src={logo} className="card-image" />
             </div>
             <p className="mt-4 text-5xl mr-10 ml-10 text-center">
-              Locked $JEWEL OTC
+              Locked Token Trading
             </p>
             <div className="flex justify-center mt-4 ps-5">
               <img src={logo} className="card-image" />

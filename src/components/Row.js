@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import ERC20Token from "../contracts/ERC20Token";
 import OfferContract from "../contracts/Offer";
 import { Button } from "react-bootstrap";
+import logo from "../assets/images/foxswap.svg";
 
 export default function Row({ offer, userContract }) {
   const [btnText, setBtnText] = useState("Approve");
@@ -11,6 +12,7 @@ export default function Row({ offer, userContract }) {
   const [btnCancelText, setbtnCancelText] = useState("Cancel");
   const [cancelLoading, setcancelLoading] = useState(false);
 
+  const imgFile = `images/${offer.lockedToken.symbol.toLowerCase()}.png`
   useEffect(async () => {
     if (userContract) {
       setBtnText("cancel & withdraw");
@@ -69,13 +71,14 @@ export default function Row({ offer, userContract }) {
     <tr>
       <td>{offer.offerAddresses.slice(0, 8)}...</td>
       {/* <td>{offer.offerAddresses}...</td> */}
-      <td>{offer.pricePerToken}</td>
+      <td><img className="card-image mt-1" src={imgFile} /></td>
+      <td>${offer.pricePerToken}</td>
       <td>
         {offer.lockedBalances}
-        <br /> {offer.lockedSymbol}
+        <br /> {offer.lockedToken.symbol}
       </td>
       <td>
-        {offer.amountWanted} <br /> {offer.tokenWantedSymbol}
+        ${offer.amountWanted} <br /> {offer.tokenWantedSymbol}
       </td>
       <td className="w-28">
         <Button className="table-btn" disable={loading} onClick={btnClick}>
