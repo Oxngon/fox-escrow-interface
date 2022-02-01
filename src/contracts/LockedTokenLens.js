@@ -5,14 +5,12 @@ import { initMultiCall } from './multicall';
 
 export default class LockedTokenLens {
     constructor(address, provider) {
-        this.token = new ethers.Contract(address, LockedTokenLensABI, provider);
-        console.log(this.token);
+        this.contract = new ethers.Contract(address, LockedTokenLensABI, provider);
     } 
   
-    getAllActiveOfferInfo = async (offerFactory)=> {
-        console.log(offerFactory);
+    getAllActiveOfferInfo = async (offerFactory) => {
         try{
-            return await this.token.getAllActiveOfferInfo(offerFactory);
+            return await this.contract.getAllActiveOfferInfo(offerFactory);
             
         }catch(err) {
             console.log(err);
@@ -20,6 +18,6 @@ export default class LockedTokenLens {
     }
 
     getOfferInfo = async (offerFactory)=> {
-        return await this.token.getOfferInfo(offerFactory);
+        return await this.contract.getOfferInfo(offerFactory);
     }
 }

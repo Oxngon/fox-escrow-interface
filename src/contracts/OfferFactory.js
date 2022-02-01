@@ -15,9 +15,8 @@ export default class OfferFactory {
     }
 
     totalVolume = async () => {
-        const callInstance = await initMultiCall();
-        const value = await callInstance.all([this.contract.totalVolume()])
-        const ans = ethers.utils.formatUnits(value[0], 18);
+        const value = await this.token.totalVolume()
+        const ans = ethers.utils.formatUnits(value, 18);
         return ans;
     }
 

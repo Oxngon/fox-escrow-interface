@@ -1,13 +1,14 @@
 import { ethers } from "ethers";
 import { activeNetwork, networks } from "../config/networkConfig";
 
+export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
+
 export const provider = new ethers.providers.JsonRpcProvider(networks[activeNetwork]);
 
 export const contractAddress = {
     multicallAddress: "0x414597a32aa9ce3e719ffebff9629c819ca4d1b1", // harmony network
-    // offerContract: "0xf4f2fDa11599dbaaDf07Ef58b6AC4b7C16666EE1",
-    offerFactory:    "0x91970Dfd491705Fa512759471e249dfd102d3804",
-    lockedTokenLens: "0x0a13b0De3f46aa245125b3F519CC8A1FE96f4126",
+    offerFactory:    "0xc12d028Bf980c10d7f3dc89deb8Fa6a92e34a5fd",
+    lockedTokenLens: "0x550CBEB65928b5bd66E725b6094cDCE34FA3599C",
     lockedTokens: [
         { name: "JEWEL", address: "0x25Cb9C2720B88E336c374CF24be68D42bA7243A4", decimals: 18, symbol: "JEWEL" },
         { name: "VIPER", address: "0x4d378E5e189f435B3B1879772A2C2A4c76F5eA36", decimals: 18, symbol: "VIPER" }

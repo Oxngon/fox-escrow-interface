@@ -34,14 +34,13 @@ function ConnectWallet(props) {
     }
   }, [error]);
   const connect = async () => {
-    console.log("hello");
     await activate(injected);
   };
   return (
     <div class="main-div">
       <Card className="main-connect-card">
         <Card.Header className="main-card-head">
-          Leading non-custodial FoxEscrow Service
+          FoxSwap Escrow
           {/* <Card.Title className="title border-b text-center pb-3 h5">
             dfk.market
           </Card.Title> */}
@@ -52,8 +51,7 @@ function ConnectWallet(props) {
               <Card.Img className="card-image" src={logo} />
             </div>
             <Card.Text className="card-body-text text-center p-4 mb-4">
-              Safe and secure way to trade locked tokens, like JEWEL, provided
-              to you by well-established FoxSwap
+              Safe and secure way to trade locked tokens, like JEWEL and VIPER
             </Card.Text>
             <div className="hidden flex mt-4 pb-4 mb-4">
               <Card.Img className="card-image" src={logo} />
