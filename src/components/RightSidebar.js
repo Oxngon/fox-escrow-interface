@@ -22,7 +22,7 @@ function RightSidebar() {
     const provider = library.getSigner();
     const balance = ethers.utils.formatEther(await library.getBalance(account));
 
-    // console.log(balance);
+    console.log('balance', balance);
     setBalance(parseFloat(balance).toFixed(2));
   }, [active]);
 
