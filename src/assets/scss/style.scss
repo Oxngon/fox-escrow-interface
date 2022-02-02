@@ -6,7 +6,7 @@ body {
   text-align: left;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
-  flex-direction: column;
+  flex-direction: row;
   display: flex;
   width: 14rem;
   margin-left: 0.5rem;
@@ -14,6 +14,18 @@ body {
   margin-top: 0.5rem;
   z-index: 50;
   left: 1rem;
+  right: 0;
+  position: fixed;
+}
+
+.right-sidebar {
+  display: flex;
+  flex-direction: row;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  margin-right: 0.125rem;
+  margin-top: 0.5rem;
+  z-index: 50;
   right: 0;
   position: fixed;
 }
@@ -45,18 +57,9 @@ body {
   text-align: center;
 }
 
-.right-sidebar {
-  display: flex;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-  margin-right: 0.125rem;
-  margin-top: 0.5rem;
-  z-index: 50;
-  right: 0;
-  position: fixed;
-}
 .right-sidebar-social {
   display: flex;
+  height: 100vh;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
   margin-top: 5rem;
@@ -82,6 +85,16 @@ body {
   padding-left: 1rem;
   padding-right: 1rem;
   min-height: 3rem;
+}
+
+.main-div-header {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  background-position: 50%;
+  background-size: cover;
+  height: 20vh;
+  flex-direction: column;
 }
 
 .main-div {

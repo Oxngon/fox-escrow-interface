@@ -13,8 +13,9 @@ function App() {
     return (
 
         <Routes>
-            <Route path="/" element={<><LeftSidebar></LeftSidebar>
-                <RightSidebar></RightSidebar><Main /></>} />
+            <Route path="/" element={<>
+                <RightSidebar></RightSidebar>
+                <Main /></>} />
             <Route path="/about" element={<AboutUs />} />
         </Routes>
 

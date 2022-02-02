@@ -3,9 +3,8 @@ import React from "react";
 export default function LeftSidebar() {
   return (
     <div className="left-sidebar">
-      <p className="left-side-head">PLEASE READ</p>
+      <p className="left-side-head">How to sell locked tokens:</p>
       <div class="left-side-content">
-        <p className="text-center mt-3 mb-0">How to sell locked tokens:</p>
         <br />
         <p className="mb-0">
           1. Deploy an Offer contract, choosing your locked token, price per
