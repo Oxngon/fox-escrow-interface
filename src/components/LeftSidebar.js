@@ -19,8 +19,8 @@ export default function LeftSidebar() {
         <p className="message-box border border-warning">
           <u>WARNING:</u>
           <br />
-          This will transfer **all** of your locked AND unlocked tokens to the
-          contract - make sure you only have locked version of the token you are
+          This will transfer <b>ALL</b> of your locked AND unlocked tokens
+          - make sure you only have locked version of the token you are
           selling in your wallet.
         </p>
         <br />

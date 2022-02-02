@@ -10,12 +10,15 @@ import ErrorMSG from "../ErrorMSG";
 import OfferFactory from "../../contracts/OfferFactory";
 import ERC20Token from "../../contracts/ERC20Token";
 
+
+function getImage(lockedToken) {
+    return `images/${lockedToken.symbol.toLowerCase()}.png`
+}
+
 function CreatOfferModal(props) {
     // const { register, handleSubmit, formState: { errors } } = useForm();
     const [tokenAddressERR, setTokenAdddressERR] = useState(false);
     const [balance, setBalance] = useState('');
-    const [tokenAmt, setTokenAmt] = useState('');
-    const [tokenAmtERR, settokenAmtERR] = useState(false);
     const [price, setprice] = useState('');
     const [priceERR, setpriceERR] = useState(false);
     // const [ balance, setBalance] = useState('');
@@ -33,8 +36,6 @@ function CreatOfferModal(props) {
     const resetState = () => {
         setTokenAdddressERR(false);
         setBalance('');
-        setTokenAmt('');
-        settokenAmtERR(false);
         setprice('');
         setpriceERR(false);
         setBalance('');
@@ -72,14 +73,14 @@ function CreatOfferModal(props) {
             return !result
         }
         setAndPing(!ethers.utils.isAddress(currentLockedToken.address), setTokenAdddressERR);
-        setAndPing(parseFloat(tokenAmt) <= 0, settokenAmtERR);
         setAndPing(parseFloat(price) <= 0, setpriceERR);
         if (!flag) return;
         setOfferLoading(true);
         try {
+            console.log('stableCoin', stableCoin);
             const erc20 = new ERC20Token(stableCoin, library.getSigner());
             const decimals = await erc20.getDecimal();
-            const amountOfStable = ERC20Token.getTokenBalanceInWei(price * tokenAmt, decimals)
+            const amountOfStable = ERC20Token.getTokenBalanceInWei(price * balance, decimals)
             const offerFactory = new OfferFactory(contractAddress.offerFactory, library.getSigner())
             const tx = await offerFactory.createOffer(currentLockedToken.address, stableCoin, amountOfStable);
             offerAddress.current = tx.events[0].args[0];
@@ -128,22 +129,16 @@ function CreatOfferModal(props) {
                             {tokenAddressERR && <ErrorMSG msg='Please Enter valid address' />}
                         </div>
                         <div className="offer-coin-div">
-                            <div className="mb-1 ms-1">${currentLockedToken.symbol} balance: {balance} </div>
-                            <div className="set-coin">
-                                <div className="coin-balance">
-                                    <img src={logo} className="coin-logo-sm coin-inline m-auto"></img>
-                                    <input disabled={offerCreated} className="coin-balance" style={{border: 'none'}} type="number" min={1e-18} step={1e-18} value={tokenAmt} placeholder="Amount" onChange={(e) => {
-                                        setTokenAmt(e.target.value);
-                                    }} />
-                                </div>
+                            <div className="mb-1 ms-1">
+                                <img src={getImage(currentLockedToken)} className="coin-logo-sm coin-inline m-sm-1"></img>
+                                {`     ${currentLockedToken.symbol} balance: ${balance}`}
                             </div>
-                            {tokenAmtERR && <ErrorMSG msg='Please Enter valid amt' />}
                         </div>
 
                         <div className="offer-coin-div">
                             <div className="mb-1 ms-1">Set ${currentLockedToken.symbol} price: </div>
                             <div className="set-coin">
-                                <input disabled={offerCreated} className="coin-balance" type="number" min={1e-18} step={1e-18} value={price} placeholder="Amount" onChange={(e) => {
+                                <input disabled={offerCreated} className="coin-balance" type="number" min={1e-18} step={1e-18} value={price} placeholder="Price Per Token" onChange={(e) => {
                                     setprice(e.target.value);
                                 }} />
                             </div>
@@ -152,7 +147,7 @@ function CreatOfferModal(props) {
 
                         <div className="flex flex-col">
                             <div className="mb-2 pb-3 ml-2 border-b border-primary">
-                                Total Sale: ${price * tokenAmt}
+                                Total Sale: ${price * balance}
                             </div>
                         </div>
                         <div className="mb-1 ml-2 mt-2">Select Stablecoin</div>
