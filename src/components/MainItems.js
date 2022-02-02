@@ -15,7 +15,7 @@ function Main() {
     return (
         <>
         {
-            viewMarket ? <ViewMarket></ViewMarket> :<ConnectWallet viewMarketClick={()=> SetViewMarket(true)}></ConnectWallet>
+            viewMarket ? <ViewItemMarket></ViewItemMarket> :<ConnectWallet viewMarketClick={()=> SetViewMarket(true)}></ConnectWallet>
         }
         </>
         
