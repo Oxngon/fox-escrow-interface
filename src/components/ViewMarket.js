@@ -46,7 +46,6 @@ function ViewMarket() {
         library.getSigner()
     );
     const totalVolume = await factory.totalVolume();
-    console.log('totalVolume', totalVolume);
     setTotalVolume(totalVolume);
   }
 
@@ -63,7 +62,6 @@ function ViewMarket() {
     for (let i = 0; i < data[0].length; i++) {
       if (data[0][i] !== ZERO_ADDRESS) {
         const lockedToken = addressToContract.get(data[0][i].toLowerCase());
-        console.log('lockedToken', lockedToken);
         const lockedBalance = ERC20Token.getFromWei(data[2][i].toString(), 18);
         console.log(i, lockedToken, lockedBalance)
         const {decimals: tokenWantedecimal, symbol: tokenWantedSymbol} =
