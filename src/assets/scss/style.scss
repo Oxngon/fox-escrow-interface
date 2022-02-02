@@ -93,8 +93,9 @@ body {
   width: 100%;
   background-position: 50%;
   background-size: cover;
-  height: 20vh;
+  height: 10vh;
   flex-direction: column;
+  column-count: 5;
 }
 
 .main-div {
