@@ -168,7 +168,7 @@ function AboutUs() {
                   trading at FoxEscrow, <a
                     rel="noreferrer"
                     target="_blank"
-                    href="https://discord.gg/p75xpZMcgQ"
+                    href="https://discord.gg/3YnDhEU6gM"
                 > <u>you can reach us on discord.</u></a>
                 </Accordion.Body>
               </Accordion.Item>
