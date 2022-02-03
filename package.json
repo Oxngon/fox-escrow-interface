@@ -1,6 +1,6 @@
 {
-  "name": "dfkmarket-frontend",
-  "version": "0.1.0",
+  "name": "foxswap-escrow",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^1.7.1",

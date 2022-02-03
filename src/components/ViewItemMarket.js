@@ -5,7 +5,14 @@ import {Button, Dropdown, Table} from "react-bootstrap";
 import logo from "../assets/images/foxswap.svg";
 import ERC20Token from "../contracts/ERC20Token";
 import LockedTokenLens from "../contracts/LockedTokenLens";
-import {ZERO_ADDRESS, contractAddress, map as addressToContract, numberWithCommas, getItemImage} from "../helper/utils";
+import {
+  ZERO_ADDRESS,
+  contractAddress,
+  map as addressToContract,
+  numberWithCommas,
+  getItemImage,
+  ItemType
+} from "../helper/utils";
 import ItemRow from "./ItemRow";
 import OfferABI from "../contracts/abi/OfferABI.json";
 import { initMultiCall } from "../contracts/multicall";
@@ -43,6 +50,7 @@ function ViewItemMarket() {
   const [filterActiveoffers, setFilterActiveOffer] = useState([]);
   const [filterUserActiveoffers, setFilterUserActiveOffer] = useState([]);
   const [sortStatus, setSortStatus] = useState("All Items");
+  const [filterItemType, setFilterItemType] = useState("All Types");
   const [filterToken, setFilterToken] = useState();
 
   const initialCounts = {}
@@ -111,7 +119,9 @@ function ViewItemMarket() {
     const allSellers = await callInstance.all(sellers)
     setSellersAddress(allSellers);
 
-    setFilterUserActiveOffer(filterOfferData(activeoffers_local, allSellers, account));
+    const tempUserActiveOffers = filterOfferData(activeoffers_local, allSellers, account)
+    setFilterUserActiveOffer(tempUserActiveOffers);
+    setUserActiveOffer(tempUserActiveOffers);
   };
 
   const onHide = (isSuccess = false) => {
@@ -139,6 +149,30 @@ function ViewItemMarket() {
         return true;
       } else {
         return contract.item.name === filterString;
+      }
+    });
+    setFilterActiveOffer(filterActiveData);
+    setFilterUserActiveOffer(filterUserData);
+  };
+
+  const handleSelectType = (e) => {
+    const tempUserData = userActiveoffers;
+    const activeData = activeoffers;
+    const filterItemString = e;
+    setFilterItemType(e);
+    const filterActiveData = activeData.filter((contract) => {
+      if (filterItemString.toLowerCase() == "All Types".toLowerCase()) {
+        return true;
+      } else {
+        return contract.item.itemType === filterItemString;
+      }
+    });
+
+    const filterUserData = tempUserData.filter((contract) => {
+      if (filterItemString.toLowerCase() == "All Types".toLowerCase()) {
+        return true;
+      } else {
+        return contract.item.itemType === filterItemString;
       }
     });
     setFilterActiveOffer(filterActiveData);
@@ -205,7 +239,7 @@ function ViewItemMarket() {
         {/* <input type="button" class="btn btn-primary btn-md rounded-btn capitalize mb-10" value="Create Offer" /> */}
         <Button
           variant="primary"
-          className="btn button rounded-btn btn-md market-btn"
+          className="btn button2 rounded-btn btn-md market-btn"
           value="create offer"
           onClick={() => setItemModalShow(true)}
         >
@@ -234,6 +268,31 @@ function ViewItemMarket() {
                 </Dropdown.Item>)
             }
             {/* <Dropdown.Divider className="border" /> */}
+          </Dropdown.Menu>
+        </Dropdown>
+
+        {/* ITEM TYPE DROPDOWN FILTER*/}
+        <Dropdown className="dropdown-btn" onSelect={handleSelectType}>
+          <Dropdown.Toggle
+              className="button padding rounded-btn text-white"
+              variant="flat"
+              id="dropdown-basic"
+          >
+            {filterItemType}
+          </Dropdown.Toggle>
+          <Dropdown.Menu className="bg-base-100">
+            <Dropdown.Item
+                value="All Types"
+                eventKey="All Types"
+                className="item"
+            >
+              All Items
+            </Dropdown.Item>
+            {Object.entries(ItemType).map(([k,v])=>
+                <Dropdown.Item eventKey={k} className="item">
+                  {v}
+                </Dropdown.Item>)
+            }
           </Dropdown.Menu>
         </Dropdown>
 

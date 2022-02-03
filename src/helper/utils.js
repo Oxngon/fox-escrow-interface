@@ -13,7 +13,7 @@ export function numberWithCommas(x, decimals) {
 
 
 export function getItemImage(item) {
-    if (item.symbol === "goldenegg") {
+    if (item.symbol === "goldenegg" || item.symbol.includes('atonement')) {
         return `images/${item.symbol.toLowerCase()}.gif`
     }
     return `images/${item.symbol.toLowerCase()}.png`
@@ -45,7 +45,8 @@ const contractAddressTestnet = {
     stableCoins: [
         { name: "USDC", address: "0xC6A6cD8E4a0134b37E3595DBac6f738970fC01A6", decimals: 18, symbol: "USDC" },
         { name: "BUSD", address: "0x3F9E6D6328D83690d74a75C016D90D7e26A7188c", decimals: 18, symbol: "BUSD" },
-        { name: "UST", address: "0xE6FCfd410a993572713c47a3638478288d06aB2d", decimals: 18, symbol: "UST" }
+        { name: "UST", address: "0xE6FCfd410a993572713c47a3638478288d06aB2d", decimals: 18, symbol: "UST" },
+        { name: "USDT", address: "0x4F97c0591b5fAb95a95d624BD34623A7ECF4ec07", decimals: 6, symbol: "USDT" }
     ],
     items: [
         { name: "Bloater", symbol: "Bloater", itemType: ItemType.FISH, address: "0x92Ec6BbBbaA21b01c30F1e6fAC7773FB208bfA13" },
@@ -86,9 +87,14 @@ const contractAddressMainnet = {
         { name: "Sailfish", symbol: "sailfish", itemType: ItemType.FISH, address: "0xb80A07e13240C31ec6dc0B5D72Af79d461dA3A70" },
         { name: "ShimmerSkin", symbol: "shimmerskin", itemType: ItemType.FISH, address: "0x372CaF681353758f985597A35266f7b330a2A44D" },
         { name: "Silverfin", symbol: "silverfin", itemType: ItemType.FISH, address: "0x2493cfDAcc0f9c07240B5B1C4BE08c62b8eEff69" },
+
         // Other
         { name: "Gaia's Tears", symbol: "gaiastears", itemType: ItemType.OTHER, address: "0x24eA0D436d3c2602fbfEfBe6a16bBc304C963D04" },
         { name: "Gold", symbol: "gold", itemType: ItemType.OTHER, address: "0x3a4EDcf3312f44EF027acfd8c21382a5259936e7" },
+        { name: "AtonementCrystal", symbol: "atonementcrystal", itemType: ItemType.OTHER, address: "0x27dC6AaaD95580EdF25F8B9676f1B984e09e413d" },
+        { name: "AtonementCrystalGreater", symbol: "atonementcrystalgreater", itemType: ItemType.OTHER, address: "0x17f3B5240C4A71a3BBF379710f6fA66B9b51f224" },
+        { name: "AtonementCrystalLesser", symbol: "atonementcrystallesser", itemType: ItemType.OTHER, address: "0x1f3F655079b70190cb79cE5bc5AE5F19dAf2A6Cf" },
+
         // EGG
         { name: "Blue Egg", symbol: "blueegg", itemType: ItemType.EGG, address: "0x9678518e04Fe02FB30b55e2D0e554E26306d0892" },
         { name: "Golden Egg", symbol: "goldenegg", itemType: ItemType.EGG, address: "0x9edb3Da18be4B03857f3d39F83e5C6AAD67bc148" },

@@ -99,7 +99,9 @@ function ViewMarket() {
     const callInstance = await initMultiCall();
     const allSellers = await callInstance.all(sellers)
     setSellersAddress(await callInstance.all(sellers));
-    setFilterUserActiveOffer(filterOfferData(activeoffers_local, allSellers, account));
+    const tempUserData = filterOfferData(activeoffers_local, allSellers, account)
+    setFilterUserActiveOffer(tempUserData);
+    setUserActiveOffer(tempUserData)
   };
 
   const onHide = (isSuccess = false) => {
@@ -211,7 +213,7 @@ function ViewMarket() {
         {/* <input type="button" class="btn btn-primary btn-md rounded-btn capitalize mb-10" value="Create Offer" /> */}
         <Button
           variant="primary"
-          className="btn button rounded-btn btn-md market-btn"
+          className="btn button2 rounded-btn btn-md market-btn"
           value="create offer"
           onClick={() => setModalShow(true)}
         >

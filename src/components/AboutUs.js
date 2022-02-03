@@ -109,9 +109,10 @@ function AboutUs() {
                   Q: How much does it cost to use FoxEscrow?
                 </Accordion.Header>
                 <Accordion.Body className="bg-base-200 rounded-lg text-sm">
-                  A: The fee to use FoxEscrow service is 1.2% of total value of
-                  the trade. It’s less than half of what similar services
-                  currently offer.
+                  A: For Locked Tokens the fee is 0.6% of total value of the trade (or 1.2% of the buy amount).
+                  <br />
+                  A: For DFK Items the fee is 1% of total value of the trade (or 2% of the buy amount).
+
                 </Accordion.Body>
               </Accordion.Item>
             </Accordion>
@@ -123,7 +124,10 @@ function AboutUs() {
                 <Accordion.Header>Q: Is FoxEscrow audited?</Accordion.Header>
                 <Accordion.Body className="bg-base-200 rounded-lg text-sm">
                   A: Yes, our code is audited by QuillHash, audit report
-                  available HERE (link).
+                  available<a
+                    rel="noreferrer"
+                    target="_blank"
+                    href="https://github.com/FarmersOnlyFi/fox-escrow-contracts"> <u>HERE</u>.</a>
                 </Accordion.Body>
               </Accordion.Item>
             </Accordion>
@@ -140,8 +144,12 @@ function AboutUs() {
                 <Accordion.Body className="bg-base-200 rounded-lg text-sm">
                   A: Yes, it’s still possible to use our manual escrow service,
                   just reach out to us like before. Note that for manual escrow
-                  service default fee is 2%. You can of course reach out to us
-                  for special cases.
+                  service default fee is 2% of the buy amount.
+                  <a
+                      rel="noreferrer"
+                      target="_blank"
+                      href="https://discord.gg/p75xpZMcgQ"
+                  > <u>You can reach us on discord.</u></a>
                 </Accordion.Body>
               </Accordion.Item>
             </Accordion>
@@ -157,8 +165,11 @@ function AboutUs() {
                 <Accordion.Body className="bg-base-200 rounded-lg text-sm">
                   A: If you have other questions about our services, or if you
                   want to ask for other locked tokens to be made available for
-                  trading at FoxEscrow please reach out to us on discord or
-                  telegram.
+                  trading at FoxEscrow, <a
+                    rel="noreferrer"
+                    target="_blank"
+                    href="https://discord.gg/p75xpZMcgQ"
+                > <u>you can reach us on discord.</u></a>
                 </Accordion.Body>
               </Accordion.Item>
             </Accordion>

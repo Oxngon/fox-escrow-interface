@@ -45,9 +45,6 @@ function ConnectWallet(props) {
       <Card className="main-connect-card">
         <Card.Header className="main-card-head">
           FoxSwap Escrow
-          {/* <Card.Title className="title border-b text-center pb-3 h5">
-            dfk.market
-          </Card.Title> */}
         </Card.Header>
         <Card.Body>
           <div className="flex content">

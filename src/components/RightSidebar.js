@@ -62,7 +62,9 @@ function RightSidebar() {
                       <a
                           className="flex"
                           rel="noreferrer"
-                          href=""
+                          target="_blank"
+                          href="https://github.com/FarmersOnlyFi/fox-escrow-contracts"
+
                       >
                         Audit
                       </a>
