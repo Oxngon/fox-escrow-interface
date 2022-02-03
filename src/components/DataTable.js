@@ -54,7 +54,7 @@ export default function DataTable({
       setBtnText({text: "Cancel & withdraw"});
     }
     setPageSize(PAGE_SIZE);
-  }, [userContract, btnText]);
+  }, [userContract]);
 
   useEffect(async () => {
     let pageArray = [];

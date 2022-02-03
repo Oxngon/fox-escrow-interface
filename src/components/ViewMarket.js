@@ -98,8 +98,7 @@ function ViewMarket() {
     });
     const callInstance = await initMultiCall();
     const allSellers = await callInstance.all(sellers)
-    setSellersAddress(allSellers);
-
+    setSellersAddress(await callInstance.all(sellers));
     setFilterUserActiveOffer(filterOfferData(activeoffers_local, allSellers, account));
   };
 
