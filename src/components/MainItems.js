@@ -7,10 +7,6 @@ import ViewItemMarket from "../components/ViewItemMarket";
 function Main() {
     // const { active, error, account, library, connector, activate, deactivate, onActivate } = useWeb3React();
     const [ viewMarket, SetViewMarket] = useState(false);
-    // const connect = async () => {
-    //     console.log("hello");
-    //     await activate(injected);
-    // }
     return (
         <>
         {

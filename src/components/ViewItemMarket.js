@@ -22,7 +22,6 @@ const value_sort = obj => {
 
 function filterOfferData(offeresData, sellersAddress, account) {
   if (offeresData.length === 0 || sellersAddress.length === 0) return;
-
   const userOffer = [];
   for (let i = 0; i < offeresData.length; i++) {
     if (sellersAddress[i].toLowerCase() === account.toLowerCase()) {
@@ -59,18 +58,6 @@ function ViewItemMarket() {
     const tempSorted = value_sort(temp);
     setItemCount(tempSorted);
   }
-
-  React.useMemo(() => {
-    if (offeresData.length === 0 || sellersAddress.length === 0) return;
-
-    const userOffer = [];
-    for (let i = 0; i < offeresData.length; i++) {
-      if (sellersAddress[i].toLowerCase() === account.toLowerCase()) {
-        userOffer.push(offeresData[i]);
-      }
-    }
-    setUserActiveOffer(userOffer);
-  }, [account, offeresData, sellersAddress]);
 
   const fetchTotalVolume = async () => {
     const factory = new OfferFactory(
@@ -115,14 +102,16 @@ function ViewItemMarket() {
     setOffersData(activeoffers_local);
     setActiveOffer(activeoffers_local);
     setFilterActiveOffer(activeoffers_local);
-    setFilterUserActiveOffer(filterOfferData(activeoffers_local));
 
     let sellers = activeoffers_local.map((ele) => {
       const contract = new Contract(ele.offerAddresses, OfferABI);
       return contract.seller();
     });
     const callInstance = await initMultiCall();
-    setSellersAddress(await callInstance.all(sellers));
+    const allSellers = await callInstance.all(sellers)
+    setSellersAddress(allSellers);
+
+    setFilterUserActiveOffer(filterOfferData(activeoffers_local, allSellers, account));
   };
 
   const onHide = (isSuccess = false) => {
@@ -255,7 +244,7 @@ function ViewItemMarket() {
       </div>
 
       <div className="market-body">
-        {userActiveoffers.length > 0 && (
+        {filterUserActiveoffers.length > 0 && (
             <>
               <h2 className="market-body-head">Your Offers</h2>
               <ItemDataTable

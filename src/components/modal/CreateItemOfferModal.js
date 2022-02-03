@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import logo from "../../assets/images/foxswap.svg";
-import { Button, Modal, Spinner, Container, Row, Col } from "react-bootstrap";
+import { Button, Modal, Spinner, Row, Col } from "react-bootstrap";
 // import { useForm } from "react-hook-form";
 import { ethers } from "ethers";
 import {getItemImage, contractAddress, numberWithCommas, provider} from "../../helper/utils";
@@ -139,7 +139,7 @@ function CreatItemOfferModal(props) {
                                 <Col xs={6}>
                                     <div className="mb-1 ms-1 text-center">Set price per {currentItem.name}: </div>
                                     <div className="set-coin1">
-                                        <input disabled={offerCreated} className="coin-balance" type="number" min={1e-18} step={1e-18} value={price} placeholder="Price" onChange={(e) => {
+                                        <input disabled={offerCreated} className="coin-balance" type="number" min={1e-2} step={1e-2} value={price} placeholder="Price" onChange={(e) => {
                                             setprice(e.target.value);
                                         }} />
                                     </div>

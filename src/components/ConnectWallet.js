@@ -19,7 +19,6 @@ function ConnectWallet(props) {
   } = useWeb3React();
 
   useEffect(async () => {
-    console.log('account', account);
     if (account) {
       props.viewMarketClick();
     }

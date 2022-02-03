@@ -21,7 +21,6 @@ import DataTable from "./DataTable";
 
 function filterOfferData(offeresData, sellersAddress, account) {
   if (offeresData.length === 0 || sellersAddress.length === 0) return;
-
   const userOffer = [];
   for (let i = 0; i < offeresData.length; i++) {
     if (sellersAddress[i].toLowerCase() === account.toLowerCase()) {
@@ -43,18 +42,6 @@ function ViewMarket() {
   const [sellersAddress, setSellersAddress] = useState([]);
   const [sortStatus, setSortStatus] = useState("Show: All");
   const [filterToken, setFilterToken] = useState();
-
-  React.useMemo(() => {
-    if (offeresData.length === 0 || sellersAddress.length === 0) return;
-
-    const userOffer = [];
-    for (let i = 0; i < offeresData.length; i++) {
-      if (sellersAddress[i].toLowerCase() === account.toLowerCase()) {
-        userOffer.push(offeresData[i]);
-      }
-    }
-    setUserActiveOffer(userOffer);
-  }, [account, offeresData, sellersAddress]);
 
   const fetchTotalVolume = async () => {
     const factory = new OfferFactory(
@@ -104,14 +91,16 @@ function ViewMarket() {
     setOffersData(activeoffers_local);
     setActiveOffer(activeoffers_local);
     setFilterActiveOffer(activeoffers_local);
-    setFilterUserActiveOffer(filterOfferData(activeoffers_local));
 
     let sellers = activeoffers_local.map((ele) => {
       const contract = new Contract(ele.offerAddresses, OfferABI);
       return contract.seller();
     });
     const callInstance = await initMultiCall();
-    setSellersAddress(await callInstance.all(sellers));
+    const allSellers = await callInstance.all(sellers)
+    setSellersAddress(allSellers);
+
+    setFilterUserActiveOffer(filterOfferData(activeoffers_local, allSellers, account));
   };
 
   const onHide = (isSuccess = false) => {
@@ -255,17 +244,6 @@ function ViewMarket() {
             {/* <Dropdown.Divider className="border" /> */}
           </Dropdown.Menu>
         </Dropdown>
-        {/* <input
-          className="token-address"
-          type="text"
-          min={1e-18}
-          step={1e-18}
-          value={tokenAddress}
-          placeholder="user address"
-          onChange={(e) => {
-            setTokenAddress(e.target.value);
-          }}
-        /> */}
 
         <CreatOfferModal
           show={modalShow}
@@ -274,7 +252,7 @@ function ViewMarket() {
       </div>
 
       <div className="market-body">
-        {userActiveoffers.length > 0 && (
+        {filterUserActiveoffers.length > 0 && (
           <>
             <h2 className="market-body-head">Your Offers</h2>
             <DataTable

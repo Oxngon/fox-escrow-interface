@@ -18,7 +18,6 @@ function RightSidebar() {
   } = useWeb3React();
   const [balance, setBalance] = useState(0);
   useEffect(async () => {
-    console.log(active);
     if (!active) return;
     const provider = library.getSigner();
     const balance = ethers.utils.formatEther(await library.getBalance(account));
