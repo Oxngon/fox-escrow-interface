@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
 
 import ConnectWallet from "../components/ConnectWallet";
-import ViewMarket from "../components/ViewMarket";
 import ViewItemMarket from "../components/ViewItemMarket";
 
 function Main() {

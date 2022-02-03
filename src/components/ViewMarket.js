@@ -34,7 +34,7 @@ function ViewMarket() {
   const [totalVolume, setTotalVolume] = useState("");
   const [offeresData, setOffersData] = useState([]);
   const [sellersAddress, setSellersAddress] = useState([]);
-  const [sortStatus, setSortStatus] = useState("Lowest Price");
+  const [sortStatus, setSortStatus] = useState("Show: All");
   const [filterToken, setFilterToken] = useState();
 
   useEffect(async () => {
@@ -126,7 +126,6 @@ function ViewMarket() {
     const activeData = activeoffers;
     setSortStatus(e);
     const filterString = e.split(" ")[1];
-    console.log(filterString);
     setFilterToken(e.split(" "[1]));
     const filterActiveData = activeData.filter((contract) => {
       if (filterString.toLowerCase() == "All".toLowerCase()) {
@@ -232,16 +231,16 @@ function ViewMarket() {
           <Dropdown.Menu className="bg-base-100">
             <Dropdown.Item
               vallue="all"
-              eventKey="Show: ALL Token"
+              eventKey="Show: ALL"
               className="item"
             >
-              All Token
+              All
             </Dropdown.Item>
-            <Dropdown.Item eventKey="Filter: JEWEL Token" className="item">
-              JEWEL Token
+            <Dropdown.Item eventKey="Filter: JEWEL" className="item">
+              JEWEL
             </Dropdown.Item>
-            <Dropdown.Item eventKey="Filter: VIPER Token" className="item">
-              VIPER Token
+            <Dropdown.Item eventKey="Filter: VIPER" className="item">
+              VIPER
             </Dropdown.Item>
             {/* <Dropdown.Divider className="border" /> */}
           </Dropdown.Menu>
@@ -265,52 +264,6 @@ function ViewMarket() {
       </div>
 
       <div className="market-body">
-        {/* {userActiveoffers.length > 0 && (
-          <div className="w-full">
-            <h2 className="market-body-head">Your Offers</h2>
-            <div className="market-body-content">
-              <Table className="market-table">
-                <thead>
-                  <tr>
-                    <th>Offer Contract</th>
-                    <th>TOKEN</th>
-                    <th>PRICE PER TOKEN</th>
-                    <th>TOKEN AMOUNT</th>
-                    <th>TOKEN WANTED</th>
-                  </tr>
-                </thead>
-                <tbody className="table-body">
-                  {userActiveoffers.map((offer) => (
-                    <Row userContract={true} offer={offer} />
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-          </div>
-        )}
-        <br />
-        <div className="w-full">
-          <h2 className="market-body-head">All Locked Token Offers</h2>
-          <div className="market-body-content">
-            <Table className="market-table">
-              <thead>
-                <tr>
-                  <th>Offer Contract</th>
-                  <th>TOKEN</th>
-                  <th>PRICE PER TOKEN</th>
-                  <th>TOKEN AMOUNT</th>
-                  <th>TOKEN WANTED</th>
-                </tr>
-              </thead>
-              <tbody className="table-body">
-                {activeoffers.map((offer) => (
-                  <Row offer={offer} />
-                ))}
-              </tbody>
-            </Table>
-          </div>
-        </div>
-        <br></br> */}
         {userActiveoffers.length > 0 && (
           <>
             <h2 className="market-body-head">Your Offers</h2>

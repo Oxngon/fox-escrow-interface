@@ -4,11 +4,14 @@ import ERC20Token from "../contracts/ERC20Token";
 import OfferContract from "../contracts/Offer";
 import { Button, Table, Pagination } from "react-bootstrap";
 import { useWeb3React } from "@web3-react/core";
+import FillOfferModal from "./modal/FillOfferModal";
 
-export default function DataTable({
-  userContract,
+const PAGE_SIZE = 10;
+
+export default function ItemDataTable({
   columns,
   data,
+  userContract,
   filterToken,
 }) {
 
@@ -41,23 +44,20 @@ export default function DataTable({
     usePagination
   );
 
-  const [btnText, setBtnText] = useState({ index: -1, text: "Approve" });
+  const [btnText, setBtnText] = useState({ index: -1, text: "Buy" });
   const [loading, setLoading] = useState({});
   const { library } = useWeb3React();
   const [btnCancelText, setbtnCancelText] = useState("Cancel & withdraw");
   const [cancelLoading, setcancelLoading] = useState(false);
   const [pageList, setPageList] = useState([]);
+  const [fillModalShow, setFillModalShow] = React.useState(-1);
 
   useEffect(async () => {
     if (userContract) {
       setBtnText({text: "Cancel & withdraw"});
     }
-    setPageSize(10);
-  }, [userContract]);
-
-  useEffect(async () => {
-    console.log(filterToken);
-  }, [filterToken]);
+    setPageSize(PAGE_SIZE);
+  }, [userContract, setBtnText]);
 
   useEffect(async () => {
     let pageArray = [];
@@ -114,15 +114,15 @@ export default function DataTable({
       let prevText = btnText.text;
       setBtnText({ index, text: "Please wait...." });
       try {
-        if (btnText.text === "Fill") {
-          console.log("Fill");
+        if (btnText.text === "Buy") {
+          console.log("Buy");
           const offerContract = new OfferContract(
             data[index].offerAddresses,
             library.getSigner()
           );
           await offerContract.fill();
           setBtnText({ index, text: "Complete" });
-        } else if (btnText.text === "Approve") {
+        } else if (btnText.text === "Buy") {
           console.log(data[index].stableCoin, data[index].amountWantedInWei);
           const erc20 = new ERC20Token(
             data[index].stableCoin,
@@ -132,7 +132,7 @@ export default function DataTable({
             data[index].offerAddresses,
             data[index].amountWantedInWei
           );
-          setBtnText({ index, text: "Fill" });
+          setBtnText({ index, text: "Buy" });
         }
       } catch (err) {
         alert(JSON.stringify(err));
@@ -142,6 +142,9 @@ export default function DataTable({
 
       setLoading({ disabledButton: index, status: false });
     }
+  };
+  const onHide = () => {
+    setFillModalShow(-1);
   };
 
   return (
@@ -174,6 +177,11 @@ export default function DataTable({
               prepareRow(row);
               return (
                 <tr {...row.getRowProps()}>
+                  <FillOfferModal
+                      offer={data[i]}
+                      show={fillModalShow === i}
+                      onHide={onHide}
+                  />
                   {row.cells.map((cell) => {
                     return (
                       <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
@@ -185,15 +193,14 @@ export default function DataTable({
                       className="table-btn"
                       disable={loading.disabledButton === i}
                       onClick={() => {
-                        btnClick(i);
+                        setFillModalShow(i);
                       }}
                     >
-                      {btnText.text != "Approve" ? (
+                      {btnText.index === i && btnText.text != "Buy" ? (
                         btnText.text
                       ) : (
                         <>
                           {btnText.text}
-                          <br /> {data[i].tokenWantedSymbol}{" "}
                         </>
                       )}
                     </Button>

@@ -10,7 +10,7 @@ import OfferContract from "../../contracts/Offer";
 
 function FillOfferModal(props) {
     // const { register, handleSubmit, formState: { errors } } = useForm();
-    const [btnText, setBtnText] = useState("Fill");
+    const [btnText, setBtnText] = useState("Buy");
     const [loading, setLoading] = useState(false);
     const [approvalAmount, setApprovalAmount] = useState('');
     const [amount, setAmount] = useState('');
@@ -37,7 +37,7 @@ function FillOfferModal(props) {
         let prevText = btnText;
         setBtnText("please wait....");
         try {
-            if (btnText === "Fill") {
+            if (btnText === "Buy") {
                 const offerContract = new ItemOfferContract(
                     props.offer.offerAddresses,
                     library.getSigner()
@@ -49,7 +49,7 @@ function FillOfferModal(props) {
             } else if (btnText === "Approve") {
                 const erc20 = new ERC20Token(props.offer.tokenWantedAddress, library.getSigner());
                 await erc20.approve(props.offer.offerAddresses, "100000000000000000000000000000000");
-                setBtnText("Fill");
+                setBtnText("Buy");
             }
         } catch (err) {
             alert(JSON.stringify(err));
@@ -68,7 +68,7 @@ function FillOfferModal(props) {
             setBalance(Number(bal));
             setApprovalAmount(approvalAmt);
             if (approvalAmt > 0) {
-                setBtnText("Fill");
+                setBtnText("Buy");
             } else {
                 setBtnText("Approve");
             }

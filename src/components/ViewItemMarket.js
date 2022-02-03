@@ -1,18 +1,26 @@
 import { useWeb3React } from "@web3-react/core";
 import { Contract } from "ethers-multicall";
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Table } from "react-bootstrap";
+import {Button, Dropdown, Table} from "react-bootstrap";
 import logo from "../assets/images/foxswap.svg";
 import ERC20Token from "../contracts/ERC20Token";
 import LockedTokenLens from "../contracts/LockedTokenLens";
-import {ZERO_ADDRESS, contractAddress, map as addressToContract, numberWithCommas} from "../helper/utils";
+import {ZERO_ADDRESS, contractAddress, map as addressToContract, numberWithCommas, getItemImage} from "../helper/utils";
 import ItemRow from "./ItemRow";
 import OfferABI from "../contracts/abi/OfferABI.json";
 import { initMultiCall } from "../contracts/multicall";
 import OfferFactory from "../contracts/OfferFactory";
 import CreateItemOfferModal from "./modal/CreateItemOfferModal";
+import ItemDataTable from "./ItemDataTable";
 
-function ViewMarket() {
+const value_sort = obj => {
+  const sortedKeys = Object.keys(obj).sort((a, b) => obj[a] - obj[b]).reverse();
+  const output = {};
+  sortedKeys.map(k => output[k] = obj[k]);
+  return output;
+}
+
+function ViewItemMarket() {
   const [itemModalShow, setItemModalShow] = React.useState(false);
   const { library, account } = useWeb3React();
   const [activeoffers, setActiveOffer] = useState([]);
@@ -20,6 +28,18 @@ function ViewMarket() {
   const [totalVolume, setTotalVolume] = useState('');
   const [offeresData, setOffersData] = useState([]);
   const [sellersAddress, setSellersAddress] = useState([]);
+  // Filters
+  const [filterActiveoffers, setFilterActiveOffer] = useState([]);
+  const [filterUserActiveoffers, setFilterUserActiveOffer] = useState([]);
+  const [sortStatus, setSortStatus] = useState("All Items");
+  const [filterToken, setFilterToken] = useState();
+
+  const initialCounts = {}
+  contractAddress.items.map(row => (
+      initialCounts[row.name] = 0
+  ));
+
+  const [itemCount, setItemCount] = useState(initialCounts)
 
   useEffect(async () => {
     if (offeresData.length === 0 || sellersAddress.length === 0) return;
@@ -27,7 +47,6 @@ function ViewMarket() {
     const userOffer = [];
     for (let i = 0; i < offeresData.length; i++) {
       if (sellersAddress[i].toLowerCase() === account.toLowerCase()) {
-        // console.log("user offer", offeresData[i]);
         userOffer.push(offeresData[i]);
       }
     }
@@ -42,6 +61,13 @@ function ViewMarket() {
     );
     const totalVolume = await factory.totalVolume();
     setTotalVolume(totalVolume);
+  }
+
+  function incrementCount(itemCount, itemName) {
+    const temp = itemCount;
+    temp[itemName] = temp[itemName]+ 1
+    const tempSorted = value_sort(temp);
+    setItemCount(tempSorted);
   }
 
   const fetchData = async () => {
@@ -63,6 +89,7 @@ function ViewMarket() {
             data[4][i].toString(),
             tokenWanted.decimals
         );
+        incrementCount(itemCount, item.name);
         activeoffers_local.push({
           offerAddresses: data[1][i],
           itemBalances: lockedBalance.toString(),
@@ -76,6 +103,9 @@ function ViewMarket() {
     }
     setOffersData(activeoffers_local);
     setActiveOffer(activeoffers_local);
+    setFilterActiveOffer(activeoffers_local);
+    setFilterUserActiveOffer(activeoffers_local);
+
     let sellers = activeoffers_local.map((ele) => {
       const contract = new Contract(ele.offerAddresses, OfferABI);
       return contract.seller();
@@ -88,6 +118,66 @@ function ViewMarket() {
     if (isSuccess) fetchData(); fetchTotalVolume();
     setItemModalShow(false);
   };
+
+
+  const handleSelect = (e) => {
+    const tempUserData = userActiveoffers;
+    const activeData = activeoffers;
+    setSortStatus(e);
+    const filterString = e;
+    setFilterToken(e);
+    const filterActiveData = activeData.filter((contract) => {
+      if (filterString.toLowerCase() == "All Items".toLowerCase()) {
+        return true;
+      } else {
+        return contract.item.name === filterString;
+      }
+    });
+
+    const filterUserData = tempUserData.filter((contract) => {
+      if (filterString.toLowerCase() == "All Items".toLowerCase()) {
+        return true;
+      } else {
+        return contract.item.name === filterString;
+      }
+    });
+    setFilterActiveOffer(filterActiveData);
+
+    setFilterUserActiveOffer(filterUserData);
+    console.log(filterActiveData);
+  };
+
+  const columns = React.useMemo(
+      () => [
+        {
+          Header: "OFFER CONTRACT",
+          accessor: (d) => <>{d.offerAddresses.slice(0, 10)}...</>,
+        },
+        {
+          Header: "ITEM",
+          accessor: (d) => {
+            return <img className="card-image mt-1" src={getItemImage(d.item)} />;
+          },
+        },
+        {
+          Header: "ITEMS AVAILABLE",
+          accessor: (d) => (
+            <>
+              {d.itemBalances}
+            <br /> {d.item.name}(s)
+            </>
+          )
+        },
+        {
+          Header: "PRICE PER ITEM",
+          accessor: (d) => (<>
+              ${d.pricePerToken} <br /> {d.tokenWanted.symbol}
+              </>
+          ),
+        },
+      ],
+      []
+  );
 
   useEffect(() => {
     fetchData();
@@ -120,9 +210,30 @@ function ViewMarket() {
           Create Offer
         </Button>
 
-        <Button className="btn button btn-md rounded-btn market-btn">
-          Lowest Price
-        </Button>
+        <Dropdown className="dropdown-btn" onSelect={handleSelect}>
+          <Dropdown.Toggle
+              className="button padding rounded-btn text-white"
+              variant="flat"
+              id="dropdown-basic"
+          >
+            {sortStatus}
+          </Dropdown.Toggle>
+          <Dropdown.Menu className="bg-base-100">
+            <Dropdown.Item
+                value="all"
+                eventKey="All Items"
+                className="item"
+            >
+              All Items
+            </Dropdown.Item>
+            {Object.entries(itemCount).map(([k,v])=>
+                <Dropdown.Item eventKey={k} className="item">
+                  {k} ({v})
+                </Dropdown.Item>)
+            }
+            {/* <Dropdown.Divider className="border" /> */}
+          </Dropdown.Menu>
+        </Dropdown>
 
         <CreateItemOfferModal
           show={itemModalShow}
@@ -132,53 +243,25 @@ function ViewMarket() {
 
       <div className="market-body">
         {userActiveoffers.length > 0 && (
-          <div className="w-full">
-            <h2 className="market-body-head">Your Offers</h2>
-            <div className="market-body-content">
-              <Table className="market-table">
-                <thead>
-                  <tr>
-                    <th>Offer Contract</th>
-                    <th>ITEM</th>
-                    <th>
-                      ITEMS AVAILABLE
-                    </th>
-                    <th>PRICE PER ITEM</th>
-                  </tr>
-                </thead>
-                <tbody className="table-body">
-                  {userActiveoffers.map((offer) => (
-                    <ItemRow userContract={true} offer={offer} />
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-          </div>
+            <>
+              <h2 className="market-body-head">Your Offers</h2>
+              <ItemDataTable
+                  userContract={true}
+                  columns={columns}
+                  data={filterUserActiveoffers}
+                  filter={filterToken}
+              />
+            </>
         )}
-        <br />
-        <div className="w-full">
-          <h2 className="market-body-head">All Item Offers</h2>
-          <div className="market-body-content">
-            <Table className="market-table">
-              <thead>
-                <tr>
-                  <th>Offer Contract</th>
-                  <th>ITEM</th>
-                  <th>ITEMS AVAILABLE</th>
-                  <th>PRICE PER ITEM</th>
-                </tr>
-              </thead>
-              <tbody className="table-body">
-                {activeoffers.map((offer) => (
-                  <ItemRow offer={offer} />
-                ))}
-              </tbody>
-            </Table>
-          </div>
-        </div>
+        <h2 className="market-body-head">All Locked Token Offers</h2>
+        <ItemDataTable
+            columns={columns}
+            filter={filterToken}
+            data={filterActiveoffers}
+        />
       </div>
     </div>
   );
 }
 
-export default ViewMarket;
+export default ViewItemMarket;
