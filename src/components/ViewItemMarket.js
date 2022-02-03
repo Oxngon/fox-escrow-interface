@@ -164,23 +164,26 @@ function ViewItemMarket() {
         },
         {
           Header: "ITEM",
-          accessor: (d) => {
-            return <img className="card-image mt-1" src={getItemImage(d.item)} />;
+          accessor: (d) => d.item.symbol,
+          Cell: ({ row: { original } }) => {
+            return <img className="card-image mt-1" src={getItemImage(original.item)} />;
           },
         },
         {
           Header: "ITEMS AVAILABLE",
-          accessor: (d) => (
+          accessor: (d) => d.itemBalances,
+          Cell: ({ row: { original } }) => (
             <>
-              {d.itemBalances}
-            <br /> {d.item.name}(s)
+              {original.itemBalances}
+            <br /> {original.item.name}(s)
             </>
           )
         },
         {
           Header: "PRICE PER ITEM",
-          accessor: (d) => (<>
-              ${d.pricePerToken} <br /> {d.tokenWanted.symbol}
+          accessor: (d) => d.pricePerToken,
+          Cell: ({ row: { original } }) => (<>
+              ${original.pricePerToken} <br /> {original.tokenWanted.symbol}
               </>
           ),
         },

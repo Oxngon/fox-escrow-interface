@@ -10,7 +10,7 @@ import OfferContract from "../contracts/Offer";
 import {
   ZERO_ADDRESS,
   contractAddress,
-  map as addressToContract,
+  map as addressToContract, numberWithCommas,
 } from "../helper/utils";
 import Row from "./Row";
 import OfferABI from "../contracts/abi/OfferABI.json";
@@ -18,11 +18,6 @@ import { initMultiCall } from "../contracts/multicall";
 import OfferFactory from "../contracts/OfferFactory";
 import DataTable from "./DataTable";
 
-function numberWithCommas(x) {
-  return parseInt(x)
-    .toString()
-    .replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
-}
 
 function filterOfferData(offeresData, sellersAddress, account) {
   if (offeresData.length === 0 || sellersAddress.length === 0) return;
@@ -84,7 +79,7 @@ function ViewMarket() {
       if (data[0][i] !== ZERO_ADDRESS) {
         const lockedToken = addressToContract.get(data[0][i].toLowerCase());
         const lockedBalance = ERC20Token.getFromWei(data[2][i].toString(), 18);
-        console.log(i, lockedToken, lockedBalance);
+        // console.log(i, lockedToken, lockedBalance);
         const { decimals: tokenWantedecimal, symbol: tokenWantedSymbol } =
           addressToContract.get(data[3][i].toLowerCase());
         const amountwanted = ERC20Token.getFromWei(
@@ -111,7 +106,6 @@ function ViewMarket() {
     setFilterActiveOffer(activeoffers_local);
     setFilterUserActiveOffer(filterOfferData(activeoffers_local));
 
-    console.log(activeoffers_local);
     let sellers = activeoffers_local.map((ele) => {
       const contract = new Contract(ele.offerAddresses, OfferABI);
       return contract.seller();
@@ -154,36 +148,49 @@ function ViewMarket() {
     () => [
       {
         Header: "OFFER CONTRACT",
+        id: '1',
         accessor: (d) => <>{d.offerAddresses.slice(0, 8)}...</>,
       },
       {
         Header: "Token",
-        accessor: (d) => {
-          const imgFile = `images/${d.lockedToken.symbol.toLowerCase()}.png`;
+        id: '2',
+        accessor: (d) => d.lockedToken.symbol,
+        Cell: ({ row: { original } }) => {
+          const imgFile = `images/${original.lockedToken.symbol.toLowerCase()}.png`;
           return <img className="card-image mt-1" src={imgFile} />;
         },
       },
       {
         Header: "PRICE PER TOKEN",
-        accessor: (d) => `$${d.pricePerToken}`,
+        id: '3',
+        accessor: (d) => d.pricePerToken,
+        Cell: ({ row: { original } }) => `$${original.pricePerToken}`,
       },
       {
         Header: "TOKEN AMOUNT",
-        accessor: (d) => (
-          <>
-            {d.lockedBalances} <br />
-            {d.lockedToken.symbol}{" "}
+        id: '4',
+        accessor: (d) => d.lockedBalances,
+        Cell: ({ row: { original } }) => {
+          return <>
+            {numberWithCommas(original.lockedBalances, false)} <br/> {original.lockedToken.symbol}
           </>
-        ),
+        },
+        sortMethod: (a, b) => {
+          return Number(a) - Number(b)
+        }
       },
       {
         Header: "TOKEN WANTED",
-        accessor: (d) => (
-          <>
-            ${d.amountWanted} <br />
-            {d.tokenWantedSymbol}{" "}
+        id: '5',
+        accessor: (d) => d.amountWanted,
+        Cell: ({ row: { original } }) => {
+          return <>
+            {numberWithCommas(original.amountWanted, false)} <br/> {original.tokenWantedSymbol}
           </>
-        ),
+        },
+        sortMethod: (a, b) => {
+          return Number(a) - Number(b)
+        }
       },
     ],
     []
@@ -205,7 +212,7 @@ function ViewMarket() {
               Total Traded Volume
             </div>
             <div className="total-volume p-3">
-              $ {numberWithCommas(totalVolume)}
+              $ {numberWithCommas(totalVolume, false)}
             </div>
           </div>
 

@@ -108,7 +108,6 @@ export default function DataTable({
       setBtnText({ index, text: "Please wait...." });
       try {
         if (btnText.text === "Fill") {
-          console.log("Fill");
           const offerContract = new OfferContract(
             data[index].offerAddresses,
             library.getSigner()
@@ -116,7 +115,6 @@ export default function DataTable({
           await offerContract.fill();
           setBtnText({ index, text: "Complete" });
         } else if (btnText.text === "Approve") {
-          console.log(data[index].stableCoin, data[index].amountWantedInWei);
           const erc20 = new ERC20Token(
             data[index].stableCoin,
             library.getSigner()

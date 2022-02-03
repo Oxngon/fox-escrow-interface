@@ -81,63 +81,7 @@ export default function ItemDataTable({
     }
     setPageList(pageArray);
   }, [pageIndex, pageCount]);
-  //
-  // const btnClick = async (index) => {
-  //   if (userContract) {
-  //     let prevText = btnText;
-  //     try {
-  //       if (btnText.text === "Cancel & withdraw") {
-  //         setLoading({ disabledButton: index, status: true });
-  //         setBtnText({ index, text: "Please wait...." });
-  //         const offerContract = new OfferContract(
-  //           data[index].offerAddresses,
-  //           library.getSigner()
-  //         );
-  //         await offerContract.cancel();
-  //         setBtnText({ index, text: "Canceled" });
-  //       }
-  //     } catch (err) {
-  //       alert(JSON.stringify(err));
-  //       console.log(err);
-  //       setBtnText({ index, text: prevText });
-  //     }
-  //
-  //     setLoading({ disabledButton: index, status: false });
-  //   } else {
-  //     setLoading({ disabledButton: index, status: true });
-  //     console.log(loading);
-  //     let prevText = btnText.text;
-  //     setBtnText({ index, text: "Please wait...." });
-  //     try {
-  //       if (btnText.text === "Buy") {
-  //         console.log("Buy");
-  //         const offerContract = new OfferContract(
-  //           data[index].offerAddresses,
-  //           library.getSigner()
-  //         );
-  //         await offerContract.fill();
-  //         setBtnText({ index, text: "Complete" });
-  //       } else if (btnText.text === "Buy") {
-  //         console.log(data[index].stableCoin, data[index].amountWantedInWei);
-  //         const erc20 = new ERC20Token(
-  //           data[index].stableCoin,
-  //           library.getSigner()
-  //         );
-  //         await erc20.approve(
-  //           data[index].offerAddresses,
-  //           data[index].amountWantedInWei
-  //         );
-  //         setBtnText({ index, text: "Buy" });
-  //       }
-  //     } catch (err) {
-  //       alert(JSON.stringify(err));
-  //       console.log(err);
-  //       setBtnText({ index, text: prevText });
-  //     }
-  //
-  //     setLoading({ disabledButton: index, status: false });
-  //   }
-  // };
+
   const onHide = () => {
     setFillModalShow(-1);
   };
@@ -178,8 +122,9 @@ export default function ItemDataTable({
                       onHide={onHide}
                   />
                   {row.cells.map((cell) => {
+                    const { key, ...restCellProperties} = cell.getCellProps()
                     return (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                        <td {...restCellProperties} key={key}>{cell.render('Cell')}</td>
                     );
                   })}
 
