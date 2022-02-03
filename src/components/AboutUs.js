@@ -148,7 +148,7 @@ function AboutUs() {
                   <a
                       rel="noreferrer"
                       target="_blank"
-                      href="https://discord.gg/p75xpZMcgQ"
+                      href="https://discord.gg/3YnDhEU6gM"
                   > <u>You can reach us on discord.</u></a>
                 </Accordion.Body>
               </Accordion.Item>
