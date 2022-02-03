@@ -1,30 +1,41 @@
 import { useWeb3React } from "@web3-react/core";
 import { Contract } from "ethers-multicall";
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Table } from "react-bootstrap";
+import { Button, Dropdown, Table } from "react-bootstrap";
 import logo from "../assets/images/foxswap.svg";
 import CreatOfferModal from "../components/modal/CreatOfferModal";
 import ERC20Token from "../contracts/ERC20Token";
 import LockedTokenLens from "../contracts/LockedTokenLens";
 import OfferContract from "../contracts/Offer";
-import {ZERO_ADDRESS, contractAddress, map as addressToContract } from "../helper/utils";
+import {
+  ZERO_ADDRESS,
+  contractAddress,
+  map as addressToContract,
+} from "../helper/utils";
 import Row from "./Row";
 import OfferABI from "../contracts/abi/OfferABI.json";
 import { initMultiCall } from "../contracts/multicall";
 import OfferFactory from "../contracts/OfferFactory";
+import DataTable from "./DataTable";
 
 function numberWithCommas(x) {
-  return parseInt(x).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+  return parseInt(x)
+    .toString()
+    .replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 }
 
 function ViewMarket() {
   const [modalShow, setModalShow] = React.useState(false);
   const { library, account } = useWeb3React();
   const [activeoffers, setActiveOffer] = useState([]);
+  const [filterActiveoffers, setFilterActiveOffer] = useState([]);
   const [userActiveoffers, setUserActiveOffer] = useState([]);
-  const [totalVolume, setTotalVolume] = useState('');
+  const [filterUserActiveoffers, setFilterUserActiveOffer] = useState([]);
+  const [totalVolume, setTotalVolume] = useState("");
   const [offeresData, setOffersData] = useState([]);
   const [sellersAddress, setSellersAddress] = useState([]);
+  const [sortStatus, setSortStatus] = useState("Lowest Price");
+  const [filterToken, setFilterToken] = useState();
 
   useEffect(async () => {
     if (offeresData.length === 0 || sellersAddress.length === 0) return;
@@ -42,12 +53,12 @@ function ViewMarket() {
 
   const fetchTotalVolume = async () => {
     const factory = new OfferFactory(
-        contractAddress.offerFactory,
-        library.getSigner()
+      contractAddress.offerFactory,
+      library.getSigner()
     );
     const totalVolume = await factory.totalVolume();
     setTotalVolume(totalVolume);
-  }
+  };
 
   const fetchData = async () => {
     const lockedTokenLens = new LockedTokenLens(
@@ -63,12 +74,12 @@ function ViewMarket() {
       if (data[0][i] !== ZERO_ADDRESS) {
         const lockedToken = addressToContract.get(data[0][i].toLowerCase());
         const lockedBalance = ERC20Token.getFromWei(data[2][i].toString(), 18);
-        console.log(i, lockedToken, lockedBalance)
-        const {decimals: tokenWantedecimal, symbol: tokenWantedSymbol} =
-            addressToContract.get(data[3][i].toLowerCase());
+        console.log(i, lockedToken, lockedBalance);
+        const { decimals: tokenWantedecimal, symbol: tokenWantedSymbol } =
+          addressToContract.get(data[3][i].toLowerCase());
         const amountwanted = ERC20Token.getFromWei(
-            data[4][i].toString(),
-            tokenWantedecimal
+          data[4][i].toString(),
+          tokenWantedecimal
         );
         const pricePerToken = (data[4][i] / data[2][i]).toFixed(3);
         activeoffers_local.push({
@@ -87,6 +98,10 @@ function ViewMarket() {
     }
     setOffersData(activeoffers_local);
     setActiveOffer(activeoffers_local);
+    setFilterActiveOffer(activeoffers_local);
+
+    setFilterUserActiveOffer(activeoffers_local);
+    console.log(activeoffers_local);
     let sellers = activeoffers_local.map((ele) => {
       const contract = new Contract(ele.offerAddresses, OfferABI);
       return contract.seller();
@@ -96,7 +111,8 @@ function ViewMarket() {
   };
 
   const onHide = (isSuccess = false) => {
-    if (isSuccess) fetchData(); fetchTotalVolume();
+    if (isSuccess) fetchData();
+    fetchTotalVolume();
     setModalShow(false);
   };
 
@@ -104,6 +120,78 @@ function ViewMarket() {
     fetchData();
     fetchTotalVolume();
   }, []);
+
+  const handleSelect = (e) => {
+    const tempUserData = userActiveoffers;
+    const activeData = activeoffers;
+    setSortStatus(e);
+    const filterString = e.split(" ")[1];
+    console.log(filterString);
+    setFilterToken(e.split(" "[1]));
+    const filterActiveData = activeData.filter((contract) => {
+      if (filterString.toLowerCase() == "All".toLowerCase()) {
+        return true;
+      } else {
+        return contract.lockedToken.name === filterString;
+      }
+    });
+
+    const filterUserData = tempUserData.filter((contract) => {
+      if (filterString.toLowerCase() == "All".toLowerCase()) {
+        return true;
+      } else {
+        return contract.lockedToken.name === filterString;
+      }
+    });
+    setFilterActiveOffer(filterActiveData);
+
+    setFilterUserActiveOffer(filterUserData);
+    console.log(filterActiveData);
+  };
+
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: "OFFER CONTRACT",
+        accessor: (d) => <>{d.offerAddresses.slice(0, 8)}...</>,
+      },
+      {
+        Header: "Token",
+        accessor: (d) => {
+          const imgFile = `images/${d.lockedToken.symbol.toLowerCase()}.png`;
+          return <img className="card-image mt-1" src={imgFile} />;
+        },
+      },
+      {
+        Header: "PRICE PER TOKEN",
+        accessor: (d) => `$${d.pricePerToken}`,
+      },
+      {
+        Header: "TOKEN AMOUNT",
+        accessor: (d) => (
+          <>
+            ${d.lockedBalances} <br />
+            {d.lockedToken.symbol}{" "}
+          </>
+        ),
+      },
+      {
+        Header: "TOKEN WANTED",
+        accessor: (d) => (
+          <>
+            ${d.amountWanted} <br />
+            {d.tokenWantedSymbol}{" "}
+          </>
+        ),
+      },
+      // {
+      //   Header: " ",
+      //   accessor: " ",
+      // },
+    ],
+    []
+  );
+
   return (
     <div className="market-main-div">
       <div className="market-head">
@@ -114,7 +202,9 @@ function ViewMarket() {
             <div className="card-body-text text-center">
               Total Traded Volume
             </div>
-            <div className="total-volume p-3">$ {numberWithCommas(totalVolume)}</div>
+            <div className="total-volume p-3">
+              $ {numberWithCommas(totalVolume)}
+            </div>
           </div>
 
           <img className="card-image mt-3" src={logo} />
@@ -131,10 +221,31 @@ function ViewMarket() {
           Create Offer
         </Button>
 
-        <Button className="btn button btn-md rounded-btn market-btn">
-          Lowest Price
-        </Button>
-
+        <Dropdown className="dropdown-btn" onSelect={handleSelect}>
+          <Dropdown.Toggle
+            className="button padding rounded-btn text-white"
+            variant="flat"
+            id="dropdown-basic"
+          >
+            {sortStatus}
+          </Dropdown.Toggle>
+          <Dropdown.Menu className="bg-base-100">
+            <Dropdown.Item
+              vallue="all"
+              eventKey="Show: ALL Token"
+              className="item"
+            >
+              All Token
+            </Dropdown.Item>
+            <Dropdown.Item eventKey="Filter: JEWEL Token" className="item">
+              JEWEL Token
+            </Dropdown.Item>
+            <Dropdown.Item eventKey="Filter: VIPER Token" className="item">
+              VIPER Token
+            </Dropdown.Item>
+            {/* <Dropdown.Divider className="border" /> */}
+          </Dropdown.Menu>
+        </Dropdown>
         {/* <input
           className="token-address"
           type="text"
@@ -154,7 +265,7 @@ function ViewMarket() {
       </div>
 
       <div className="market-body">
-        {userActiveoffers.length > 0 && (
+        {/* {userActiveoffers.length > 0 && (
           <div className="w-full">
             <h2 className="market-body-head">Your Offers</h2>
             <div className="market-body-content">
@@ -164,9 +275,7 @@ function ViewMarket() {
                     <th>Offer Contract</th>
                     <th>TOKEN</th>
                     <th>PRICE PER TOKEN</th>
-                    <th>
-                      TOKEN AMOUNT
-                    </th>
+                    <th>TOKEN AMOUNT</th>
                     <th>TOKEN WANTED</th>
                   </tr>
                 </thead>
@@ -189,9 +298,7 @@ function ViewMarket() {
                   <th>Offer Contract</th>
                   <th>TOKEN</th>
                   <th>PRICE PER TOKEN</th>
-                  <th>
-                    TOKEN AMOUNT
-                  </th>
+                  <th>TOKEN AMOUNT</th>
                   <th>TOKEN WANTED</th>
                 </tr>
               </thead>
@@ -203,6 +310,24 @@ function ViewMarket() {
             </Table>
           </div>
         </div>
+        <br></br> */}
+        {userActiveoffers.length > 0 && (
+          <>
+            <h2 className="market-body-head">Your Offers</h2>
+            <DataTable
+              userContract={true}
+              columns={columns}
+              data={filterUserActiveoffers}
+              filter={filterToken}
+            />
+          </>
+        )}
+        <h2 className="market-body-head">All Locked Token Offers</h2>
+        <DataTable
+          columns={columns}
+          filter={filterToken}
+          data={filterActiveoffers}
+        />
       </div>
     </div>
   );
