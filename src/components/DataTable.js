@@ -4,6 +4,7 @@ import ERC20Token from "../contracts/ERC20Token";
 import OfferContract from "../contracts/Offer";
 import { Button, Table, Pagination } from "react-bootstrap";
 import { useWeb3React } from "@web3-react/core";
+import {PAGE_SIZE} from "../helper/utils";
 
 export default function DataTable({
   userContract,
@@ -52,33 +53,25 @@ export default function DataTable({
     if (userContract) {
       setBtnText({text: "Cancel & withdraw"});
     }
-    setPageSize(10);
-  }, [userContract]);
-
-  useEffect(async () => {
-    console.log(filterToken);
-  }, [filterToken]);
+    setPageSize(PAGE_SIZE);
+  }, [userContract, btnText]);
 
   useEffect(async () => {
     let pageArray = [];
     let maxPage = pageCount;
     let minPage = pageIndex + 1;
-    const pageRange = 5;
+    const pageRange = 2; // number of pages to show on each side
     if (pageIndex + pageRange < pageCount) {
-      maxPage = pageIndex + pageRange;
+      maxPage = pageIndex + pageRange + 1;
     }
-    if (maxPage - minPage >= pageRange - 1) {
-      minPage = pageIndex + 1;
+    // figure out min page
+
+    if (pageIndex <= pageRange) {
+      minPage = 1;
+    } else if (maxPage - minPage > pageRange) {
+      minPage = maxPage - pageRange;
     } else {
-      if (maxPage == 1) {
-        minPage = 1;
-      } else {
-        if (pageCount % 2 == 0) {
-          minPage = pageRange - 1;
-        } else {
-          minPage = pageRange - 2;
-        }
-      }
+      minPage = pageIndex - 1;
     }
 
     for (let number = minPage; number <= maxPage; number++) {
@@ -206,29 +199,29 @@ export default function DataTable({
       </div>
 
       {!userContract && (
-        <Pagination className="pt-3">
-          <Pagination.First
-            onClick={() => gotoPage(0)}
-            disabled={!canPreviousPage}
-          />
-          <Pagination.Prev
-            onClick={() => previousPage()}
-            disabled={!canPreviousPage}
-          />
-          {pageList.map((pageNumber) => (
-            <Pagination.Item
-              active={pageNumber == pageIndex + 1}
-              onClick={() => gotoPage(pageNumber - 1)}
-            >
-              {pageNumber}
-            </Pagination.Item>
-          ))}
-          <Pagination.Next onClick={() => nextPage()} disabled={!canNextPage} />
-          <Pagination.Last
-            onClick={() => gotoPage(pageCount - 1)}
-            disabled={!canNextPage}
-          />
-        </Pagination>
+          <Pagination className="pt-3">
+            <Pagination.First
+                onClick={() => gotoPage(0)}
+                disabled={!canPreviousPage}
+            ><b>{1}</b></Pagination.First>
+            <Pagination.Prev
+                onClick={() => previousPage()}
+                disabled={!canPreviousPage}
+            />
+            {pageList.map((pageNumber) => (
+                <Pagination.Item
+                    active={pageNumber == pageIndex + 1}
+                    onClick={() => gotoPage(pageNumber - 1)}
+                >
+                  {pageNumber}
+                </Pagination.Item>
+            ))}
+            <Pagination.Next onClick={() => nextPage()} disabled={!canNextPage} />
+            <Pagination.Last
+                onClick={() => gotoPage(pageCount - 1)}
+                disabled={!canNextPage}
+            ><b>{pageCount}</b></Pagination.Last>
+          </Pagination>
       )}
     </>
   );

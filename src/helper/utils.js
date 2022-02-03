@@ -1,6 +1,8 @@
 import { ethers } from "ethers";
 import { activeNetwork, networks } from "../config/networkConfig";
 
+export const PAGE_SIZE = 10;
+
 export function numberWithCommas(x, decimals) {
     if (x === '') {return '0'}
     if (decimals) {

@@ -86,6 +86,7 @@ function CreatOfferModal(props) {
             offerAddress.current = tx.events[0].args[0];
             console.log(offerAddress.current);
             setofferCreated(true);
+            fundSubmit();
         } catch (err) {
             alert(JSON.stringify(err));
             console.log(err);
@@ -146,7 +147,7 @@ function CreatOfferModal(props) {
                         </div>
 
                         <div className="flex flex-col">
-                            <div className="mb-2 pb-3 ml-2 border-b border-primary text-center">
+                            <div className="mb-2 pb-3 ml-2 border-primary text-center">
                                 Total Sale: <b>${numberWithCommas(price * balance, true)}</b>
                             </div>
                         </div>

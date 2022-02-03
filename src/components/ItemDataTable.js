@@ -5,8 +5,7 @@ import OfferContract from "../contracts/Offer";
 import { Button, Table, Pagination } from "react-bootstrap";
 import { useWeb3React } from "@web3-react/core";
 import FillOfferModal from "./modal/FillOfferModal";
-
-const PAGE_SIZE = 10;
+import {PAGE_SIZE} from "../helper/utils";
 
 export default function ItemDataTable({
   columns,
@@ -63,22 +62,18 @@ export default function ItemDataTable({
     let pageArray = [];
     let maxPage = pageCount;
     let minPage = pageIndex + 1;
-    const pageRange = 5;
+    const pageRange = 2; // number of pages to show on each side
     if (pageIndex + pageRange < pageCount) {
-      maxPage = pageIndex + pageRange;
+      maxPage = pageIndex + pageRange + 1;
     }
-    if (maxPage - minPage >= pageRange - 1) {
-      minPage = pageIndex + 1;
+    // figure out min page
+
+    if (pageIndex <= pageRange) {
+      minPage = 1;
+    } else if (maxPage - minPage > pageRange) {
+      minPage = maxPage - pageRange;
     } else {
-      if (maxPage == 1) {
-        minPage = 1;
-      } else {
-        if (pageCount % 2 == 0) {
-          minPage = pageRange - 1;
-        } else {
-          minPage = pageRange - 2;
-        }
-      }
+      minPage = pageIndex - 1;
     }
 
     for (let number = minPage; number <= maxPage; number++) {
@@ -86,63 +81,63 @@ export default function ItemDataTable({
     }
     setPageList(pageArray);
   }, [pageIndex, pageCount]);
-
-  const btnClick = async (index) => {
-    if (userContract) {
-      let prevText = btnText;
-      try {
-        if (btnText.text === "Cancel & withdraw") {
-          setLoading({ disabledButton: index, status: true });
-          setBtnText({ index, text: "Please wait...." });
-          const offerContract = new OfferContract(
-            data[index].offerAddresses,
-            library.getSigner()
-          );
-          await offerContract.cancel();
-          setBtnText({ index, text: "Canceled" });
-        }
-      } catch (err) {
-        alert(JSON.stringify(err));
-        console.log(err);
-        setBtnText({ index, text: prevText });
-      }
-
-      setLoading({ disabledButton: index, status: false });
-    } else {
-      setLoading({ disabledButton: index, status: true });
-      console.log(loading);
-      let prevText = btnText.text;
-      setBtnText({ index, text: "Please wait...." });
-      try {
-        if (btnText.text === "Buy") {
-          console.log("Buy");
-          const offerContract = new OfferContract(
-            data[index].offerAddresses,
-            library.getSigner()
-          );
-          await offerContract.fill();
-          setBtnText({ index, text: "Complete" });
-        } else if (btnText.text === "Buy") {
-          console.log(data[index].stableCoin, data[index].amountWantedInWei);
-          const erc20 = new ERC20Token(
-            data[index].stableCoin,
-            library.getSigner()
-          );
-          await erc20.approve(
-            data[index].offerAddresses,
-            data[index].amountWantedInWei
-          );
-          setBtnText({ index, text: "Buy" });
-        }
-      } catch (err) {
-        alert(JSON.stringify(err));
-        console.log(err);
-        setBtnText({ index, text: prevText });
-      }
-
-      setLoading({ disabledButton: index, status: false });
-    }
-  };
+  //
+  // const btnClick = async (index) => {
+  //   if (userContract) {
+  //     let prevText = btnText;
+  //     try {
+  //       if (btnText.text === "Cancel & withdraw") {
+  //         setLoading({ disabledButton: index, status: true });
+  //         setBtnText({ index, text: "Please wait...." });
+  //         const offerContract = new OfferContract(
+  //           data[index].offerAddresses,
+  //           library.getSigner()
+  //         );
+  //         await offerContract.cancel();
+  //         setBtnText({ index, text: "Canceled" });
+  //       }
+  //     } catch (err) {
+  //       alert(JSON.stringify(err));
+  //       console.log(err);
+  //       setBtnText({ index, text: prevText });
+  //     }
+  //
+  //     setLoading({ disabledButton: index, status: false });
+  //   } else {
+  //     setLoading({ disabledButton: index, status: true });
+  //     console.log(loading);
+  //     let prevText = btnText.text;
+  //     setBtnText({ index, text: "Please wait...." });
+  //     try {
+  //       if (btnText.text === "Buy") {
+  //         console.log("Buy");
+  //         const offerContract = new OfferContract(
+  //           data[index].offerAddresses,
+  //           library.getSigner()
+  //         );
+  //         await offerContract.fill();
+  //         setBtnText({ index, text: "Complete" });
+  //       } else if (btnText.text === "Buy") {
+  //         console.log(data[index].stableCoin, data[index].amountWantedInWei);
+  //         const erc20 = new ERC20Token(
+  //           data[index].stableCoin,
+  //           library.getSigner()
+  //         );
+  //         await erc20.approve(
+  //           data[index].offerAddresses,
+  //           data[index].amountWantedInWei
+  //         );
+  //         setBtnText({ index, text: "Buy" });
+  //       }
+  //     } catch (err) {
+  //       alert(JSON.stringify(err));
+  //       console.log(err);
+  //       setBtnText({ index, text: prevText });
+  //     }
+  //
+  //     setLoading({ disabledButton: index, status: false });
+  //   }
+  // };
   const onHide = () => {
     setFillModalShow(-1);
   };
@@ -217,7 +212,7 @@ export default function ItemDataTable({
           <Pagination.First
             onClick={() => gotoPage(0)}
             disabled={!canPreviousPage}
-          />
+          ><b>{1}</b></Pagination.First>
           <Pagination.Prev
             onClick={() => previousPage()}
             disabled={!canPreviousPage}
@@ -234,7 +229,7 @@ export default function ItemDataTable({
           <Pagination.Last
             onClick={() => gotoPage(pageCount - 1)}
             disabled={!canNextPage}
-          />
+          ><b>{pageCount}</b></Pagination.Last>
         </Pagination>
       )}
     </>

@@ -24,6 +24,18 @@ function numberWithCommas(x) {
     .replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 }
 
+function filterOfferData(offeresData, sellersAddress, account) {
+  if (offeresData.length === 0 || sellersAddress.length === 0) return;
+
+  const userOffer = [];
+  for (let i = 0; i < offeresData.length; i++) {
+    if (sellersAddress[i].toLowerCase() === account.toLowerCase()) {
+      userOffer.push(offeresData[i]);
+    }
+  }
+  return userOffer;
+}
+
 function ViewMarket() {
   const [modalShow, setModalShow] = React.useState(false);
   const { library, account } = useWeb3React();
@@ -37,17 +49,15 @@ function ViewMarket() {
   const [sortStatus, setSortStatus] = useState("Show: All");
   const [filterToken, setFilterToken] = useState();
 
-  useEffect(async () => {
+  React.useMemo(() => {
     if (offeresData.length === 0 || sellersAddress.length === 0) return;
 
     const userOffer = [];
     for (let i = 0; i < offeresData.length; i++) {
       if (sellersAddress[i].toLowerCase() === account.toLowerCase()) {
-        console.log("user offer", offeresData[i]);
         userOffer.push(offeresData[i]);
       }
     }
-
     setUserActiveOffer(userOffer);
   }, [account, offeresData, sellersAddress]);
 
@@ -99,8 +109,8 @@ function ViewMarket() {
     setOffersData(activeoffers_local);
     setActiveOffer(activeoffers_local);
     setFilterActiveOffer(activeoffers_local);
+    setFilterUserActiveOffer(filterOfferData(activeoffers_local));
 
-    setFilterUserActiveOffer(activeoffers_local);
     console.log(activeoffers_local);
     let sellers = activeoffers_local.map((ele) => {
       const contract = new Contract(ele.offerAddresses, OfferABI);
@@ -111,15 +121,9 @@ function ViewMarket() {
   };
 
   const onHide = (isSuccess = false) => {
-    if (isSuccess) fetchData();
-    fetchTotalVolume();
+    if (isSuccess) fetchData(); fetchTotalVolume();
     setModalShow(false);
   };
-
-  useEffect(() => {
-    fetchData();
-    fetchTotalVolume();
-  }, []);
 
   const handleSelect = (e) => {
     const tempUserData = userActiveoffers;
@@ -143,9 +147,7 @@ function ViewMarket() {
       }
     });
     setFilterActiveOffer(filterActiveData);
-
     setFilterUserActiveOffer(filterUserData);
-    console.log(filterActiveData);
   };
 
   const columns = React.useMemo(
@@ -169,7 +171,7 @@ function ViewMarket() {
         Header: "TOKEN AMOUNT",
         accessor: (d) => (
           <>
-            ${d.lockedBalances} <br />
+            {d.lockedBalances} <br />
             {d.lockedToken.symbol}{" "}
           </>
         ),
@@ -183,13 +185,14 @@ function ViewMarket() {
           </>
         ),
       },
-      // {
-      //   Header: " ",
-      //   accessor: " ",
-      // },
     ],
     []
   );
+
+  useEffect(() => {
+    fetchData();
+    fetchTotalVolume();
+  }, []);
 
   return (
     <div className="market-main-div">

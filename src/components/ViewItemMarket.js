@@ -20,6 +20,18 @@ const value_sort = obj => {
   return output;
 }
 
+function filterOfferData(offeresData, sellersAddress, account) {
+  if (offeresData.length === 0 || sellersAddress.length === 0) return;
+
+  const userOffer = [];
+  for (let i = 0; i < offeresData.length; i++) {
+    if (sellersAddress[i].toLowerCase() === account.toLowerCase()) {
+      userOffer.push(offeresData[i]);
+    }
+  }
+  return userOffer;
+}
+
 function ViewItemMarket() {
   const [itemModalShow, setItemModalShow] = React.useState(false);
   const { library, account } = useWeb3React();
@@ -41,7 +53,14 @@ function ViewItemMarket() {
 
   const [itemCount, setItemCount] = useState(initialCounts)
 
-  useEffect(async () => {
+  function incrementCount(itemCount, itemName) {
+    const temp = itemCount;
+    temp[itemName] = temp[itemName]+ 1
+    const tempSorted = value_sort(temp);
+    setItemCount(tempSorted);
+  }
+
+  React.useMemo(() => {
     if (offeresData.length === 0 || sellersAddress.length === 0) return;
 
     const userOffer = [];
@@ -50,7 +69,6 @@ function ViewItemMarket() {
         userOffer.push(offeresData[i]);
       }
     }
-
     setUserActiveOffer(userOffer);
   }, [account, offeresData, sellersAddress]);
 
@@ -61,13 +79,6 @@ function ViewItemMarket() {
     );
     const totalVolume = await factory.totalVolume();
     setTotalVolume(totalVolume);
-  }
-
-  function incrementCount(itemCount, itemName) {
-    const temp = itemCount;
-    temp[itemName] = temp[itemName]+ 1
-    const tempSorted = value_sort(temp);
-    setItemCount(tempSorted);
   }
 
   const fetchData = async () => {
@@ -104,7 +115,7 @@ function ViewItemMarket() {
     setOffersData(activeoffers_local);
     setActiveOffer(activeoffers_local);
     setFilterActiveOffer(activeoffers_local);
-    setFilterUserActiveOffer(activeoffers_local);
+    setFilterUserActiveOffer(filterOfferData(activeoffers_local));
 
     let sellers = activeoffers_local.map((ele) => {
       const contract = new Contract(ele.offerAddresses, OfferABI);
@@ -142,9 +153,7 @@ function ViewItemMarket() {
       }
     });
     setFilterActiveOffer(filterActiveData);
-
     setFilterUserActiveOffer(filterUserData);
-    console.log(filterActiveData);
   };
 
   const columns = React.useMemo(
@@ -183,6 +192,7 @@ function ViewItemMarket() {
     fetchData();
     fetchTotalVolume();
   }, []);
+
   return (
     <div className="market-main-div">
       <div className="market-head">

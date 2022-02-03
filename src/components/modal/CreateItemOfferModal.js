@@ -19,7 +19,7 @@ function CreatItemOfferModal(props) {
     const { account, library } = useWeb3React();
     const stableCoins = contractAddress.stableCoins;
     const items = contractAddress.items;
-    const [stableCoin, setStableCoin] = useState(stableCoins[0].address);
+    const [stableCoin, setStableCoin] = useState(stableCoins[0]);
     const [currentItem, setCurrentItem] = useState(items[0]);
     const [currentAmount, setCurrentAmount] = useState(0);
     const [loadingOffer, setOfferLoading] = useState(false);
@@ -34,7 +34,7 @@ function CreatItemOfferModal(props) {
         setprice('');
         setpriceERR(false);
         setCurrentAmount(1);
-        setStableCoin(stableCoins[0].address);
+        setStableCoin(stableCoins[0]);
         setCurrentItem(items[0]);
         setOfferLoading(false);
         setofferCreated(false);
@@ -73,15 +73,15 @@ function CreatItemOfferModal(props) {
         if (!flag) return;
         setOfferLoading(true);
         try {
-            console.log('stableCoin', stableCoin);
-            const erc20 = new ERC20Token(stableCoin, library.getSigner());
+            const erc20 = new ERC20Token(stableCoin.address, library.getSigner());
             const decimals = await erc20.getDecimal();
             const pricePerItem = ERC20Token.getTokenBalanceInWei(price, decimals)
             const offerFactory = new OfferFactory(contractAddress.itemOfferFactory, library.getSigner())
-            const tx = await offerFactory.createOffer(currentItem.address, stableCoin, pricePerItem);
+            const tx = await offerFactory.createOffer(currentItem.address, stableCoin.address, pricePerItem);
             offerAddress.current = tx.events[0].args[0];
-            console.log('New Offer Addrss:', offerAddress.current);
+            console.log('New Offer Address:', offerAddress.current);
             setofferCreated(true);
+            fundSubmit();
         } catch (err) {
             alert(JSON.stringify(err));
             console.log(err);
@@ -96,6 +96,7 @@ function CreatItemOfferModal(props) {
         const itemContract = new ERC20Token(currentItem.address, library.getSigner());
         const balance = await itemContract.getTokenBalance(account);
         setBalance(balance)
+        console.log('stableCoin', stableCoin)
     }, [currentItem, account, library]);
     return (
         <Modal
@@ -159,8 +160,8 @@ function CreatItemOfferModal(props) {
 
                         <div className="mb-1 ms-1 text-center">Select Stablecoin</div>
                         <div className="set-coin1">
-                            <select disabled={offerCreated} className="coin-balance select-font text-center" onClick={(e) => setStableCoin(e.target.value)}>
-                                {stableCoins.map((ele, idx) => <option key={idx} value={ele.address}>{ele.symbol}</option>)}
+                            <select disabled={offerCreated} className="coin-balance select-font text-center" onClick={(e) => setStableCoin(JSON.parse(e.target.value))}>
+                                {stableCoins.map((ele, idx) => <option key={idx} value={JSON.stringify(ele)}>{ele.symbol}</option>)}
                             </select>
                         </div>
                             </Col>
@@ -168,7 +169,7 @@ function CreatItemOfferModal(props) {
                         <Row>
                             <div className="flex flex-col">
                                 <div className="mb-2 pb-3 ml-2 border-primary text-center">
-                                    Total Sale: <b>${numberWithCommas(price * currentAmount, true)}</b>
+                                    Total Sale: <b>${numberWithCommas(price * currentAmount, true)} {stableCoin.symbol}</b>
                                 </div>
                             </div>
                         </Row>
