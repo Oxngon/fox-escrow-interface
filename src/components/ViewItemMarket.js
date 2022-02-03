@@ -3,18 +3,17 @@ import { Contract } from "ethers-multicall";
 import React, { useEffect, useRef, useState } from "react";
 import { Button, Table } from "react-bootstrap";
 import logo from "../assets/images/foxswap.svg";
-import CreatOfferModal from "../components/modal/CreatOfferModal";
 import ERC20Token from "../contracts/ERC20Token";
 import LockedTokenLens from "../contracts/LockedTokenLens";
-import OfferContract from "../contracts/Offer";
 import {ZERO_ADDRESS, contractAddress, map as addressToContract, numberWithCommas} from "../helper/utils";
 import ItemRow from "./ItemRow";
 import OfferABI from "../contracts/abi/OfferABI.json";
 import { initMultiCall } from "../contracts/multicall";
 import OfferFactory from "../contracts/OfferFactory";
+import CreateItemOfferModal from "./modal/CreateItemOfferModal";
 
 function ViewMarket() {
-  const [modalShow, setModalShow] = React.useState(false);
+  const [itemModalShow, setItemModalShow] = React.useState(false);
   const { library, account } = useWeb3React();
   const [activeoffers, setActiveOffer] = useState([]);
   const [userActiveoffers, setUserActiveOffer] = useState([]);
@@ -87,7 +86,7 @@ function ViewMarket() {
 
   const onHide = (isSuccess = false) => {
     if (isSuccess) fetchData(); fetchTotalVolume();
-    setModalShow(false);
+    setItemModalShow(false);
   };
 
   useEffect(() => {
@@ -116,7 +115,7 @@ function ViewMarket() {
           variant="primary"
           className="btn button rounded-btn btn-md market-btn"
           value="create offer"
-          onClick={() => setModalShow(true)}
+          onClick={() => setItemModalShow(true)}
         >
           Create Offer
         </Button>
@@ -125,20 +124,8 @@ function ViewMarket() {
           Lowest Price
         </Button>
 
-        {/* <input
-          className="token-address"
-          type="text"
-          min={1e-18}
-          step={1e-18}
-          value={tokenAddress}
-          placeholder="user address"
-          onChange={(e) => {
-            setTokenAddress(e.target.value);
-          }}
-        /> */}
-
-        <CreatOfferModal
-          show={modalShow}
+        <CreateItemOfferModal
+          show={itemModalShow}
           onHide={(isSuccess) => onHide(isSuccess)}
         />
       </div>

@@ -4,7 +4,7 @@ import ERC20Token from "../contracts/ERC20Token";
 import OfferContract from "../contracts/Offer";
 import { Button } from "react-bootstrap";
 import logo from "../assets/images/foxswap.svg";
-import {ItemType} from "../helper/utils";
+import {getItemImage, ItemType} from "../helper/utils";
 import FillOfferModal from "./modal/FillOfferModal";
 import ItemOfferContract from "../contracts/ItemOffer";
 
@@ -16,11 +16,6 @@ export default function ItemRow({ offer, userContract }) {
   const { library } = useWeb3React();
   const [btnCancelText, setbtnCancelText] = useState("Cancel");
   const [cancelLoading, setcancelLoading] = useState(false);
-
-  let imgFile = `images/${offer.item.symbol.toLowerCase()}.png`
-  if (offer.item.itemType === ItemType.EGG) {
-    imgFile = `images/${offer.item.symbol.toLowerCase()}.gif`
-  }
 
   const onHide = () => {
     setFillModalShow(false);
@@ -79,7 +74,7 @@ export default function ItemRow({ offer, userContract }) {
       />
       <td>{offer.offerAddresses.slice(0, 8)}...</td>
       {/* <td>{offer.offerAddresses}...</td> */}
-      <td><img className="card-image mt-1" src={imgFile} /></td>
+      <td><img className="card-image mt-1" src={getItemImage(offer.item)} /></td>
       <td>
         {offer.itemBalances}
         <br /> {offer.item.name}(s)

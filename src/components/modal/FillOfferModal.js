@@ -1,24 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import logo from "../../assets/images/foxswap.svg";
 import { Button, Modal, Spinner } from "react-bootstrap";
-// import { useForm } from "react-hook-form";
-import { ethers } from "ethers";
-import {contractAddress, ItemType, numberWithCommas, provider} from "../../helper/utils";
+import {getItemImage, ItemType, numberWithCommas, provider} from "../../helper/utils";
 import LockedToken from "../../contracts/LockedToken";
 import { useWeb3React } from "@web3-react/core";
-import ErrorMSG from "../ErrorMSG";
-import OfferFactory from "../../contracts/OfferFactory";
 import ERC20Token from "../../contracts/ERC20Token";
 import ItemOfferContract from "../../contracts/ItemOffer";
 import OfferContract from "../../contracts/Offer";
 
-
-function getImage(item) {
-    if (item.itemType === ItemType.EGG) {
-        return `images/${item.symbol.toLowerCase()}.gif`
-    }
-    return `images/${item.symbol.toLowerCase()}.png`
-}
 
 function FillOfferModal(props) {
     // const { register, handleSubmit, formState: { errors } } = useForm();
@@ -109,10 +97,9 @@ function FillOfferModal(props) {
                         </div>
                         <div className="offer-coin-div">
                             <div className="mb-1 ms-1 text-center">
-                                <img src={getImage(props.offer.item)} className="coin-logo-md coin-inline m-sm-1"></img>
-                            </div>
-                            <div className="mb-1 ms-1 text-center">
-                                {`     ${props.offer.item.name}s for sale:`} <b>{props.offer.itemBalances}</b>
+                                <img src={getItemImage(props.offer.item)} className="coin-logo-md coin-inline m-sm-1"></img>
+                                {`     ${props.offer.item.name}s for sale:`} <b>{props.offer.itemBalances}</b>{` `}
+                                <img src={getItemImage(props.offer.item)} className="coin-logo-md coin-inline m-sm-1"></img>
                             </div>
                         </div>
                         <div className="offer-coin-div text-center">

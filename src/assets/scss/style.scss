@@ -398,7 +398,15 @@ body {
 
 .set-coin {
   grid-template-columns: repeat(1, minmax(0, 1fr));
-  width: 25%;
+  width: 33%;
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.set-coin1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  width: 66%;
   display: block;
   margin-right: auto;
   margin-left: auto;

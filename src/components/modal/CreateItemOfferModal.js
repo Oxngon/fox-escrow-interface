@@ -1,32 +1,27 @@
 import React, { useEffect, useRef, useState } from "react";
 import logo from "../../assets/images/foxswap.svg";
-import { Button, Modal, Spinner } from "react-bootstrap";
+import { Button, Modal, Spinner, Container, Row, Col } from "react-bootstrap";
 // import { useForm } from "react-hook-form";
 import { ethers } from "ethers";
-import {contractAddress, numberWithCommas, provider} from "../../helper/utils";
-import LockedToken from "../../contracts/LockedToken";
+import {getItemImage, contractAddress, numberWithCommas, provider} from "../../helper/utils";
 import { useWeb3React } from "@web3-react/core";
 import ErrorMSG from "../ErrorMSG";
 import OfferFactory from "../../contracts/OfferFactory";
 import ERC20Token from "../../contracts/ERC20Token";
 
 
-function getImage(lockedToken) {
-    return `images/${lockedToken.symbol.toLowerCase()}.png`
-}
-
-function CreatOfferModal(props) {
+function CreatItemOfferModal(props) {
     // const { register, handleSubmit, formState: { errors } } = useForm();
     const [tokenAddressERR, setTokenAdddressERR] = useState(false);
-    const [balance, setBalance] = useState('');
+    const [balance, setBalance] = useState(0);
     const [price, setprice] = useState('');
     const [priceERR, setpriceERR] = useState(false);
-    // const [ balance, setBalance] = useState('');
     const { account, library } = useWeb3React();
     const stableCoins = contractAddress.stableCoins;
-    const lockedTokens = contractAddress.lockedTokens;
+    const items = contractAddress.items;
     const [stableCoin, setStableCoin] = useState(stableCoins[0].address);
-    const [currentLockedToken, setCurrentLockedToken] = useState(lockedTokens[0]);
+    const [currentItem, setCurrentItem] = useState(items[0]);
+    const [currentAmount, setCurrentAmount] = useState(0);
     const [loadingOffer, setOfferLoading] = useState(false);
     const [offerCreated, setofferCreated] = useState(false);
     const [fundLoading, setFundLoading] = useState(false);
@@ -35,12 +30,12 @@ function CreatOfferModal(props) {
 
     const resetState = () => {
         setTokenAdddressERR(false);
-        setBalance('');
+        setBalance(0);
         setprice('');
         setpriceERR(false);
-        setBalance('');
+        setCurrentAmount(1);
         setStableCoin(stableCoins[0].address);
-        setCurrentLockedToken(lockedTokens[0]);
+        setCurrentItem(items[0]);
         setOfferLoading(false);
         setofferCreated(false);
         setFundLoading(false);
@@ -51,8 +46,9 @@ function CreatOfferModal(props) {
         if (offerAddress.current === '0x') return;
         setFundLoading(true);
         try {
-            const lockedToken = new LockedToken(currentLockedToken, library.getSigner());
-            await lockedToken.transferAll(offerAddress.current);
+            const amountToSend = currentAmount > balance ? balance : currentAmount
+            const itemContract = new ERC20Token(currentItem.address, library.getSigner());
+            await itemContract.transfer(offerAddress.current, amountToSend);
             resetState();
             props.onHide(true);
         } catch (err) {
@@ -72,7 +68,7 @@ function CreatOfferModal(props) {
                 flag = false;
             return !result
         }
-        setAndPing(!ethers.utils.isAddress(currentLockedToken.address), setTokenAdddressERR);
+        setAndPing(!ethers.utils.isAddress(currentItem.address), setTokenAdddressERR);
         setAndPing(parseFloat(price) <= 0, setpriceERR);
         if (!flag) return;
         setOfferLoading(true);
@@ -80,11 +76,11 @@ function CreatOfferModal(props) {
             console.log('stableCoin', stableCoin);
             const erc20 = new ERC20Token(stableCoin, library.getSigner());
             const decimals = await erc20.getDecimal();
-            const amountOfStable = ERC20Token.getTokenBalanceInWei(price * balance, decimals)
-            const offerFactory = new OfferFactory(contractAddress.offerFactory, library.getSigner())
-            const tx = await offerFactory.createOffer(currentLockedToken.address, stableCoin, amountOfStable);
+            const pricePerItem = ERC20Token.getTokenBalanceInWei(price, decimals)
+            const offerFactory = new OfferFactory(contractAddress.itemOfferFactory, library.getSigner())
+            const tx = await offerFactory.createOffer(currentItem.address, stableCoin, pricePerItem);
             offerAddress.current = tx.events[0].args[0];
-            console.log(offerAddress.current);
+            console.log('New Offer Addrss:', offerAddress.current);
             setofferCreated(true);
         } catch (err) {
             alert(JSON.stringify(err));
@@ -94,13 +90,13 @@ function CreatOfferModal(props) {
     }
 
     useEffect(async () => {
-        if (!ethers.utils.isAddress(currentLockedToken.address))
+        if (!ethers.utils.isAddress(currentItem.address))
             return;
 
-        const lockedToken = new LockedToken(currentLockedToken, library.getSigner());
-        const balance = await lockedToken.getDecimalsTotalBalance(account);
+        const itemContract = new ERC20Token(currentItem.address, library.getSigner());
+        const balance = await itemContract.getTokenBalance(account);
         setBalance(balance)
-    }, [currentLockedToken, account, library]);
+    }, [currentItem, account, library]);
     return (
         <Modal
             {...props}
@@ -116,50 +112,73 @@ function CreatOfferModal(props) {
                     </Modal.Title>
 
                     <form>
-                        <div className="offer-coin-div">
+                        <Row>
                             <div className="offer-coin-div">
                                 <div className="mb-1 ms-1 text-center">
-                                    <img src={getImage(currentLockedToken)} className="coin-logo-sm coin-inline m-sm-1"></img>
-                                    {`     ${currentLockedToken.symbol} balance: ${numberWithCommas(balance)}`}
+                                    <img src={getItemImage(currentItem)} className="coin-logo-md coin-inline m-sm-1"></img>
+                                    {`     ${currentItem.name} balance:`} <b>{numberWithCommas(balance)}</b>{` `}
+                                    <img src={getItemImage(currentItem)} className="coin-logo-md coin-inline m-sm-1"></img>
                                 </div>
                             </div>
-                            <div className="mb-1 ms-1 text-center">Choose Locked Token </div>
-                            <div className="set-coin">
+                        </Row>
+
+                            <Row>
+                                <Col xs={6}>
+                            <div className="mb-1 ms-1 text-center">Choose Item to Sell </div>
+                            <div className="set-coin1">
                                 {/* <input className="coin-balance" type="text" value={tokenAddress} placeholder="Token Address" onChange={(e) => {
                                     setTokenAdddress(e.target.value);
                                 }} /> */}
-                                <select disabled={offerCreated} className="coin-balance select-font text-center" onClick={(e) => setCurrentLockedToken(JSON.parse(e.target.value))}>
-                                    {lockedTokens.map((ele, idx) => <option key={idx} value={JSON.stringify(ele)}>{ele.symbol}</option>)}
+                                <select disabled={offerCreated} className="coin-balance select-font text-center" onClick={(e) => setCurrentItem(JSON.parse(e.target.value))}>
+                                    {items.map((ele, idx) => <option key={idx} value={JSON.stringify(ele)}>{ele.name}</option>)}
                                 </select>
                             </div>
                             {tokenAddressERR && <ErrorMSG msg='Please Enter valid address' />}
-                        </div>
-
-                        <div className="offer-coin-div">
-                            <div className="mb-1 ms-1 text-center">Set price per {currentLockedToken.symbol}: </div>
-                            <div className="set-coin">
-                                <input disabled={offerCreated} className="coin-balance" type="number" min={1e-18} step={1e-18} value={price} placeholder="Price Per Token" onChange={(e) => {
-                                    setprice(e.target.value);
+                                </Col>
+                                <Col xs={6}>
+                                    <div className="mb-1 ms-1 text-center">Set price per {currentItem.name}: </div>
+                                    <div className="set-coin1">
+                                        <input disabled={offerCreated} className="coin-balance" type="number" min={1e-18} step={1e-18} value={price} placeholder="Price" onChange={(e) => {
+                                            setprice(e.target.value);
+                                        }} />
+                                    </div>
+                                    {priceERR && <ErrorMSG msg='Please Enter valid price' />}
+                                </Col>
+                        </Row>
+                        <Row className="offer-coin-div">
+                            <Col>
+                            <div className="mb-1 ms-1 text-center"># Items to Sell </div>
+                            <div className="set-coin1">
+                                <input disabled={offerCreated} className="coin-balance" type="number" min={1} step={1} value={currentAmount} placeholder="Amount" onChange={(e) => {
+                                    setCurrentAmount(e.target.value);
                                 }} />
                             </div>
                             {priceERR && <ErrorMSG msg='Please Enter valid price' />}
-                        </div>
+                            </Col>
+                            <Col>
 
-                        <div className="flex flex-col">
-                            <div className="mb-2 pb-3 ml-2 border-b border-primary text-center">
-                                Total Sale: <b>${numberWithCommas(price * balance, true)}</b>
-                            </div>
-                        </div>
-                        <div className="mb-1 ml-2 mt-2 text-center">Select Stablecoin</div>
-                        <div className="set-coin">
+                        <div className="mb-1 ms-1 text-center">Select Stablecoin</div>
+                        <div className="set-coin1">
                             <select disabled={offerCreated} className="coin-balance select-font text-center" onClick={(e) => setStableCoin(e.target.value)}>
                                 {stableCoins.map((ele, idx) => <option key={idx} value={ele.address}>{ele.symbol}</option>)}
                             </select>
                         </div>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <div className="flex flex-col">
+                                <div className="mb-2 pb-3 ml-2 border-primary text-center">
+                                    Total Sale: <b>${numberWithCommas(price * currentAmount, true)}</b>
+                                </div>
+                            </div>
+                        </Row>
                         <div className="mt-4 flex content-center justify-center pb-4 border-b">
-                            <Button disabled={loadingOffer || offerCreated || balance == 0} className="btn btn-primary mt-1 w-64 btn-error btn-disabled p-3 border-radius" onClick={handleSubmit}>
-                                {balance == 0 ?
-                                    `You have no ${currentLockedToken.symbol}` :
+                            <Button
+                                disabled={loadingOffer || offerCreated || balance == 0 || currentAmount <= 0 || currentAmount > balance || price <= 0}
+                                className="btn btn-primary mt-1 w-64 btn-error btn-disabled p-3 border-radius"
+                                onClick={handleSubmit}>
+                                {balance == 0 ? `You have no ${currentItem.name}s` :
+                                    currentAmount > balance ? `Not enough ${currentItem.name}s` :
                                     `Create Offer`
                                 }
                             </Button>
@@ -172,15 +191,15 @@ function CreatOfferModal(props) {
                         </div>
                         <div className="flex justify-content text-center mt-2 border-b pb-3 content-center grid justify-self-center overflow-hidden text-center">
                             <div className="dropdown dropdown-right dropdown-end text-2xl pb-2">
-                                Step 2. Fund Contract with ${currentLockedToken.symbol}
+                                Step 2. Fund Contract with {currentItem.name}s
                             </div>
                         </div>
                         <div className="pt-4 text-center">
-                            <p>You can cancel the contract and recover all your unsold locked ${currentLockedToken.symbol} at any time.</p>
+                            <p>You can cancel the contract and recover all your unsold {currentItem.name}s at any time.</p>
                         </div>
                         <div className="mt-4 flex content-center justify-center pb-4 border-b">
                             <Button disabled={fundLoading || !offerCreated} onClick={fundSubmit} className="btn btn-primary mt-1 w-64 btn-error btn-disabled p-3 border-radius">
-                                Fund Contract
+                                Send Contract {currentAmount} {currentItem.name}s
                             </Button>
                             {
                                 fundLoading &&
@@ -196,4 +215,4 @@ function CreatOfferModal(props) {
     );
 }
 
-export default CreatOfferModal;
+export default CreatItemOfferModal;
