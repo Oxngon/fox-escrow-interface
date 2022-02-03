@@ -19,6 +19,10 @@ function ConnectWallet(props) {
   } = useWeb3React();
 
   useEffect(async () => {
+    console.log('account', account);
+    if (account) {
+      props.viewMarketClick();
+    }
     if (error) {
       if (error instanceof UnsupportedChainIdError) {
         const provider = await connector.getProvider();
@@ -32,9 +36,10 @@ function ConnectWallet(props) {
         // console.log("No Metamask")
       }
     }
-  }, [error]);
+  }, [error, account, props]);
   const connect = async () => {
     await activate(injected);
+    props.viewMarketClick();
   };
   return (
     <div class="main-div">
@@ -59,37 +64,14 @@ function ConnectWallet(props) {
           </div>
 
           <div class="text-center">
-            {active ? (
-              <Button
-                variant="primary"
-                className="btn button rounded-btn btn-md card-btn"
-                value="View Market"
-                onClick={props.viewMarketClick}
-              >
-                View Market
-              </Button>
-            ) : (
-              //   <input
-              //     type="button"
-              //     class="btn button btn-md rounded-btn w-48 capitalize z-50 self-center mb-10"
-              //     value="View Market"
-              //     onClick={props.viewMarketClick}
-              //   />
-              <Button
-                variant="primary"
-                className="btn button rounded-btn btn-md card-btn"
-                value="Connect Wallet"
-                onClick={connect}
-              >
-                Connect Wallet
-              </Button>
-              //   <input
-              //     type="button"
-              //     class="btn button btn-md rounded-btn w-48 capitalize z-50 self-center mb-10"
-              //     value="Connect Wallet"
-              //     onClick={connect}
-              //   />
-            )}
+            <Button
+              variant="primary"
+              className="btn button rounded-btn btn-md card-btn"
+              value="Connect Wallet"
+              onClick={connect}
+            >
+              Connect Wallet
+            </Button>
           </div>
         </Card.Body>
       </Card>

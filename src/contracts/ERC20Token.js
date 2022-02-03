@@ -34,6 +34,11 @@ export default class ERC20Token {
         return await tx.wait();
     }
 
+    transfer = async (to, amt) => {
+        let tx = await this.token.transfer(to, amt);
+        return await tx.wait();
+    }
+
     getDecimal = async () => {
         return (await this.token.decimals()).toString();
     }

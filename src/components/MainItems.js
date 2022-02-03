@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
 
 import ConnectWallet from "../components/ConnectWallet";
-import ViewMarket from "../components/ViewMarket";
 import ViewItemMarket from "../components/ViewItemMarket";
 
 function Main() {
@@ -15,7 +14,7 @@ function Main() {
     return (
         <>
         {
-            viewMarket ? <ViewMarket></ViewMarket> :<ConnectWallet viewMarketClick={()=> SetViewMarket(true)}></ConnectWallet>
+            viewMarket ? <ViewItemMarket></ViewItemMarket> :<ConnectWallet viewMarketClick={()=> SetViewMarket(true)}></ConnectWallet>
         }
         </>
         

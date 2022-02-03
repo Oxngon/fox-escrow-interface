@@ -18,6 +18,15 @@ body {
   position: fixed;
 }
 
+.text-error {
+  color: red;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+
+
 .right-sidebar {
   display: flex;
   flex-direction: row;
@@ -89,13 +98,31 @@ body {
 
 .main-div-header {
   display: grid;
+  align-items: center;
   place-items: center;
   width: 100%;
-  background-position: 50%;
+  background-position: 100%;
   background-size: cover;
   height: 10vh;
   flex-direction: column;
-  column-count: 5;
+  column-count: 10;
+}
+
+.site-layout-content {
+  min-height: 280px;
+  padding: 24px;
+  background: #fff;
+}
+#components-layout-demo-top .logo {
+  float: left;
+  width: 120px;
+  height: 31px;
+  margin: 16px 24px 16px 0;
+  background: rgba(255, 255, 255, 0.3);
+}
+.ant-row-rtl #components-layout-demo-top .logo {
+  float: right;
+  margin: 16px 0 16px 24px;
 }
 
 .main-div {
@@ -108,15 +135,32 @@ body {
 }
 
 .main-connect-card {
+  display: grid;
+  place-items: center;
   border-radius: 15px;
   padding-top: 2.5rem;
-  display: flex;
   overflow: hidden;
-  position: relative;
   background-color: #2a2e37;
   padding-left: 2.5rem;
   padding-right: 2.5rem;
   width: 50%;
+}
+
+.main-header-card {
+  border-radius: 5px;
+  padding: 0rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  background-color: #2a2e37;
+  width: 90%;
+}
+
+.align-right {
+  display: flex;
+  float: right;
 }
 
 .main-card-head {
@@ -309,6 +353,14 @@ body {
   color: hsla(0 0% 100% / 1);
   white-space: normal;
 }
+
+.center {
+  margin: auto;
+  width: 50%;
+  border: 3px solid green;
+  padding: 10px;
+}
+
 .modal-content {
   background-color: transparent;
   border: none;
@@ -345,8 +397,19 @@ body {
 }
 
 .set-coin {
-  display: grid;
   grid-template-columns: repeat(1, minmax(0, 1fr));
+  width: 33%;
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.set-coin1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  width: 66%;
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .coin-balance {
@@ -379,6 +442,11 @@ option {
 .coin-logo-sm {
   width: 20px;
   height: 20px;
+}
+
+.coin-logo-md {
+  width: 40px;
+  height: 40px;
 }
 
 .coin-inline {

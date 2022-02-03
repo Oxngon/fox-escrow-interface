@@ -3,6 +3,7 @@ import "./index.scss";
 import LeftSidebar from "../src/components/LeftSidebar";
 import RightSidebar from "../src/components/RightSidebar";
 import Main from "../src/components/Main";
+import MainItems from "../src/components/MainItems";
 import {
     Routes,
     Route
@@ -14,9 +15,23 @@ function App() {
 
         <Routes>
             <Route path="/" element={<>
-                <RightSidebar></RightSidebar>
-                <Main /></>} />
-            <Route path="/about" element={<AboutUs />} />
+                  <RightSidebar />
+                  <Main />
+                </>
+            } />
+            <Route path="/tokens" element={<>
+                <RightSidebar />
+                <Main />
+            </>
+            } />
+            <Route path="/about" element={<>
+                <RightSidebar />
+                <AboutUs />
+                </>} />
+            <Route path="/items" element={<>
+                <RightSidebar />
+                <MainItems />
+            </>} />
         </Routes>
 
     );
