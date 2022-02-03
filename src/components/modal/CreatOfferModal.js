@@ -188,7 +188,7 @@ function CreatOfferModal(props) {
                         </div>
 
                         {offerAddress.current !== '0x' && <div className="pt-4 text-center">
-                            <p>Success! Your contract address is: {offerAddress.current}</p>
+                            <p>Success! Your contract address is: <b>{offerAddress.current}</b></p>
                         </div>}
                         <div className="pt-4 text-center">
                             <p>You can cancel the contract and recover all your unsold locked ${currentLockedToken.symbol} at any time.</p>

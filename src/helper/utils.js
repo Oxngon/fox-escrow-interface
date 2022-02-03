@@ -50,12 +50,10 @@ const contractAddressTestnet = {
     ],
     items: [
         { name: "Bloater", symbol: "Bloater", itemType: ItemType.FISH, address: "0x92Ec6BbBbaA21b01c30F1e6fAC7773FB208bfA13" },
-        { name: "Blue Egg", symbol: "blueegg", itemType: ItemType.EGG, address: "0xc1E54E68EB6DB74c6756Ba6C1B39332E0d2a1438" },
-        { name: "Green Egg", symbol: "greenegg", itemType: ItemType.EGG, address: "0xc1E54E68EB6DB74c6756Ba6C1B39332E0d2a1438" },
-        { name: "Grey Egg", symbol: "greyegg", itemType: ItemType.EGG, address: "0xc1E54E68EB6DB74c6756Ba6C1B39332E0d2a1438" },
-        { name: "Yellow Egg", symbol: "yellowegg", itemType: ItemType.EGG, address: "0xc1E54E68EB6DB74c6756Ba6C1B39332E0d2a1438" },
         { name: "Golden Egg", symbol: "goldenegg", itemType: ItemType.EGG, address: "0xc1E54E68EB6DB74c6756Ba6C1B39332E0d2a1438" },
-        { name: "Ragweed", symbol: "ragweed", itemType: ItemType.PLANT, address: "0xD1d89A186A702066d6A9D2b3aeac8f14A6096321" }
+        { name: "Ragweed", symbol: "ragweed", itemType: ItemType.PLANT, address: "0xD1d89A186A702066d6A9D2b3aeac8f14A6096321" },
+        { name: "Gold", symbol: "gold", itemType: ItemType.OTHER, address: "0x1cb90A7A399E22d4c41d4aFfCb35b4ADc45507dC" }
+
     ]
 }
 

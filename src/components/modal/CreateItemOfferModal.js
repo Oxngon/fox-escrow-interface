@@ -195,7 +195,7 @@ function CreatItemOfferModal(props) {
                             </div>
                         </div>
                         {offerAddress.current !== '0x' && <div className="pt-4 text-center">
-                            <p>Success! Your contract is {offerAddress.current}</p>
+                            <p>Success! Your contract is <b>{offerAddress.current}</b></p>
                         </div>}
                         <div className="pt-4 text-center">
                             <p>You can cancel the contract and recover all your unsold {currentItem.name}s at any time.</p>
