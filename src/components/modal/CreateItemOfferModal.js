@@ -96,7 +96,6 @@ function CreatItemOfferModal(props) {
         const itemContract = new ERC20Token(currentItem.address, library.getSigner());
         const balance = await itemContract.getTokenBalance(account);
         setBalance(balance)
-        console.log('stableCoin', stableCoin)
     }, [currentItem, account, library]);
     return (
         <Modal
@@ -139,7 +138,7 @@ function CreatItemOfferModal(props) {
                                 <Col xs={6}>
                                     <div className="mb-1 ms-1 text-center">Set price per {currentItem.name}: </div>
                                     <div className="set-coin1">
-                                        <input disabled={offerCreated} className="coin-balance" type="number" min={1e-2} step={1e-2} value={price} placeholder="Price" onChange={(e) => {
+                                        <input disabled={offerCreated} className="coin-balance text-center" type="number" min={1e-2} step={1e-2} value={price} placeholder="Price" onChange={(e) => {
                                             setprice(e.target.value);
                                         }} />
                                     </div>
@@ -150,7 +149,7 @@ function CreatItemOfferModal(props) {
                             <Col>
                             <div className="mb-1 ms-1 text-center"># Items to Sell </div>
                             <div className="set-coin1">
-                                <input disabled={offerCreated} className="coin-balance" type="number" min={1} step={1} value={currentAmount} placeholder="Amount" onChange={(e) => {
+                                <input disabled={offerCreated} className="coin-balance text-center" type="number" min={1} step={1} value={currentAmount} placeholder="Amount" onChange={(e) => {
                                     setCurrentAmount(e.target.value);
                                 }} />
                             </div>
@@ -195,6 +194,9 @@ function CreatItemOfferModal(props) {
                                 Step 2. Fund Contract with {currentItem.name}s
                             </div>
                         </div>
+                        {offerAddress.current !== '0x' && <div className="pt-4 text-center">
+                            <p>Success! Your contract is {offerAddress.current}</p>
+                        </div>}
                         <div className="pt-4 text-center">
                             <p>You can cancel the contract and recover all your unsold {currentItem.name}s at any time.</p>
                         </div>

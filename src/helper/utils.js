@@ -53,7 +53,8 @@ const contractAddressTestnet = {
         { name: "Green Egg", symbol: "greenegg", itemType: ItemType.EGG, address: "0xc1E54E68EB6DB74c6756Ba6C1B39332E0d2a1438" },
         { name: "Grey Egg", symbol: "greyegg", itemType: ItemType.EGG, address: "0xc1E54E68EB6DB74c6756Ba6C1B39332E0d2a1438" },
         { name: "Yellow Egg", symbol: "yellowegg", itemType: ItemType.EGG, address: "0xc1E54E68EB6DB74c6756Ba6C1B39332E0d2a1438" },
-        { name: "Golden Egg", symbol: "goldenegg", itemType: ItemType.EGG, address: "0xc1E54E68EB6DB74c6756Ba6C1B39332E0d2a1438" }
+        { name: "Golden Egg", symbol: "goldenegg", itemType: ItemType.EGG, address: "0xc1E54E68EB6DB74c6756Ba6C1B39332E0d2a1438" },
+        { name: "Ragweed", symbol: "ragweed", itemType: ItemType.PLANT, address: "0xD1d89A186A702066d6A9D2b3aeac8f14A6096321" }
     ]
 }
 

@@ -51,6 +51,28 @@ export default function ItemDataTable({
   const [pageList, setPageList] = useState([]);
   const [fillModalShow, setFillModalShow] = React.useState(-1);
 
+  const onClick = async (i) => {
+    console.log('onClick', i)
+    if (userContract) {
+      let prevText = btnText;
+      try {
+        setLoading(true);
+        const offerContract = new OfferContract(
+            data[i].offerAddresses,
+            library.getSigner()
+        );
+        await offerContract.cancel();
+        setBtnText("Canceled");
+      } catch (err) {
+        alert(JSON.stringify(err));
+        console.log(err);
+        setBtnText(prevText);
+      }
+    } else {
+      setFillModalShow(i);
+    }
+  }
+
   useEffect(async () => {
     if (userContract) {
       setBtnText({text: "Cancel & withdraw"});
@@ -132,9 +154,7 @@ export default function ItemDataTable({
                     <Button
                       className="table-btn"
                       disable={loading.disabledButton === i}
-                      onClick={() => {
-                        setFillModalShow(i);
-                      }}
+                      onClick={() => onClick(i)}
                     >
                       {btnText.index === i && btnText.text != "Buy" ? (
                         btnText.text
