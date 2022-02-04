@@ -89,12 +89,12 @@ function RightSidebar() {
                       <a
                           rel="noreferrer"
                           target="_blank"
-                          href="https://discord.gg/p75xpZMcgQ"
+                          href="https://discord.gg/3YnDhEU6gM"
                       >
                         <div>
                           <a
                               target="_blank"
-                              href="https://discord.gg/p75xpZMcgQ"
+                              href="https://discord.gg/3YnDhEU6gM"
                               rel="noopener noreferrer"
                           >
                             <svg
@@ -117,7 +117,7 @@ function RightSidebar() {
                       <a
                           rel="noreferrer"
                           target="_blank"
-                          href="https://discord.gg/p75xpZMcgQ"
+                          href="https://t.me/farmersonlyfi"
                       >
                         <div>
                           <svg
