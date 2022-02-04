@@ -148,7 +148,7 @@ function AboutUs() {
                   <a
                       rel="noreferrer"
                       target="_blank"
-                      href="https://discord.gg/3YnDhEU6gM"
+                      href="https://discord.gg/foxswap"
                   > <u>You can reach us on discord.</u></a>
                 </Accordion.Body>
               </Accordion.Item>
@@ -168,7 +168,7 @@ function AboutUs() {
                   trading at FoxEscrow, <a
                     rel="noreferrer"
                     target="_blank"
-                    href="https://discord.gg/3YnDhEU6gM"
+                    href="https://discord.gg/foxswap"
                 > <u>you can reach us on discord.</u></a>
                 </Accordion.Body>
               </Accordion.Item>
